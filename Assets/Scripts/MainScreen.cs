@@ -33,6 +33,7 @@ public class MainScreen : MonoBehaviour
 
 	// Network stuff
 	private string serverName;
+	public static string playerName = "";
 	private NetworkGame netScript = null;
 
 	// chat stuff
@@ -133,17 +134,25 @@ public class MainScreen : MonoBehaviour
 		{
 			GUILayout.BeginHorizontal ();
 			{
-				
 				GUILayout.Space (10);
 				GUILayout.Label ("Server name");
-				serverName = GUILayout.TextField (serverName, GUILayout.MinWidth (100));
+				serverName = GUILayout.TextField(serverName, GUILayout.MinWidth (100));
+			}
+			GUILayout.EndHorizontal ();
+
+			GUILayout.BeginHorizontal ();
+			{
+				GUILayout.Space (10);
+				GUILayout.Label ("Player name");
+				playerName = GUILayout.TextField(playerName, GUILayout.MinWidth (100));
 			}
 			GUILayout.EndHorizontal ();
 			
 			GUILayout.Space (10);
 			if (GUILayout.Button ("Start game")) {
 				
-				netScript.StartMasterServer ();
+				netScript.StartMasterServer();
+
 				// FIXME: passing to network script?
 				currentMenu = LobbyMenu;
 			} else if (GUILayout.Button ("Back")) {
@@ -250,6 +259,7 @@ public class MainScreen : MonoBehaviour
 		// Added title offset
 		//	GUILayout.BeginHorizontal();
 		{
+			/*
 			// Left: chat
 			//	GUILayout.BeginArea(chatWindow);
 			//{
@@ -276,16 +286,15 @@ public class MainScreen : MonoBehaviour
 				inputField = GUILayout.TextField(inputField);
 			}
 			//GUILayout.EndArea();
-			*/			
+			*/
+			
 			// Right side: connected players
 			GUI.Box (playerSetupBox, "Player #1");
 		}
 		//	GUILayout.EndHorizontal();
 	}
 
-	/// <summary>
-	/// The chat window while the players are in the lobby
-	/// </summary>
+	/*
 	void GlobalChatWindow (int nId)
 	{
 		
@@ -323,6 +332,6 @@ public class MainScreen : MonoBehaviour
 		lastUnfocus = Time.time;
 		usingChat = false;
 	}
-	
+	*/
 }
 

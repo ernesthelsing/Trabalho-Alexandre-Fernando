@@ -19,15 +19,15 @@ public class LobbyChat : MonoBehaviour
 	// Playerlist on the server
 	class LobbyPlayerNode {
 
-		string playerName;
-		NetworkPlayer networkPlayer;
+		public string playerName;
+		public NetworkPlayer networkPlayer;
 	}
 	private List<LobbyPlayerNode> playerList = new List<LobbyPlayerNode>();
 
 	// Chat stuff
 	class LobbyChatEntry {
-		string name;
-		string text;
+		public string name;
+		public string text;
 	}
 	private List<LobbyChatEntry> chatEntries = new List<LobbyChatEntry>();
 
@@ -39,7 +39,7 @@ public class LobbyChat : MonoBehaviour
 	/* -------------------------------------------------------------------------------------------------------- */
 	void Awake() {
 
-		window = Rect(Screen.width * 0.5f - width*0.5f, Screen.height - height+5, width, height);
+		window = new Rect(Screen.width * 0.5f - width*0.5f, Screen.height - height+5, width, height);
 	}
 
 	void OnGUI() {
@@ -57,7 +57,7 @@ public class LobbyChat : MonoBehaviour
 			}
 		}
 
-		window = GUI.window(5, window, GlobalChatWindow, "");
+		window = GUI.Window(5, window, GlobalChatWindow, "");
 	}
 
 
@@ -139,9 +139,10 @@ public class LobbyChat : MonoBehaviour
 	void ShowChatWindow() {
 
 		// FIXME: this code generated problems before...
-		playerName = PlayerPrefs.GetString("playerName", "");
+		//playerName = PlayerPrefs.GetString("playerName", "");
+		playerName = MainScreen.playerName;
 
-		if(!playerName || playerName == "") {
+		if(playerName == null || playerName == "") {
 
 			playerName = "RandomName" + Random.Range(1,999);
 		}
@@ -178,14 +179,14 @@ public class LobbyChat : MonoBehaviour
 				GUILayout.Space(1);
 			}
 		}
-		GUILayout.EndScrollView():
+		GUILayout.EndScrollView();
 
 		if (Event.current.type == EventType.keyDown && Event.current.character == '\n' && inputField.Length > 0) {
 			
-			HitEnter (inputField);
+			HitEnter(inputField);
 		}
-		GUI.SetNextControlName ("Chat input field");
-		inputField = GUILayout.TextField (inputField);
+		GUI.SetNextControlName("Chat input field");
+		inputField = GUILayout.TextField(inputField);
 
 		// New!
 		//
