@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+// TODO: do distinguish between in-game e lobby chat
+
 public class LobbyChat : MonoBehaviour
 {
 
@@ -10,19 +12,11 @@ public class LobbyChat : MonoBehaviour
 	private string inputField = "";
 
 	private Vector2 scrollPosition = Vector2.zero;
-	private int width = 400;
-	private int height = 180;
+	private int width = 300;
+	private int height = 320;
 	private string playerName = null;
 	private float lastUnfocus = 0;
 	private Rect window;
-
-	// Playerlist on the server
-	class LobbyPlayerNode {
-
-		public string playerName;
-		public NetworkPlayer networkPlayer;
-	}
-	private List<LobbyPlayerNode> playerList = new List<LobbyPlayerNode>();
 
 	// Chat stuff
 	class LobbyChatEntry {
@@ -31,6 +25,7 @@ public class LobbyChat : MonoBehaviour
 	}
 	private List<LobbyChatEntry> chatEntries = new List<LobbyChatEntry>();
 
+	private MainScreen mainScreenScript;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -39,7 +34,11 @@ public class LobbyChat : MonoBehaviour
 	/* -------------------------------------------------------------------------------------------------------- */
 	void Awake() {
 
-		window = new Rect(Screen.width * 0.5f - width*0.5f, Screen.height - height+5, width, height);
+		mainScreenScript = MainScreen.Script;
+
+		//window = new Rect(Screen.width * 0.5f - width * 0.5f, Screen.height - height+5, width, height);
+		//window = mainScreenScript.GetAreaForChat();
+		window = new Rect(30, 30, width, height);
 	}
 
 	void OnGUI() {
@@ -86,10 +85,10 @@ public class LobbyChat : MonoBehaviour
 
 		ShowChatWindow();
 
-		LobbyPlayerNode newEntry = new LobbyPlayerNode();
+		NetworkGame.PlayerInfo newEntry = new NetworkGame.PlayerInfo();
 		newEntry.playerName = playerName;
 		newEntry.networkPlayer = Network.player;
-		playerList.Add(newEntry);
+		NetworkGame.playerList.Add(newEntry);
 
 		addGameChatMessage(playerName + " joined the game.");
 	}
@@ -99,10 +98,10 @@ public class LobbyChat : MonoBehaviour
 		addGameChatMessage("Player disconnected from "+ player.ipAddress);
 
 		// Remove player from the list
-		foreach(LobbyPlayerNode entry in playerList) {
+		foreach(NetworkGame.PlayerInfo entry in NetworkGame.playerList) {
 
 			if(entry.networkPlayer == player) {
-				playerList.Remove(entry);
+				NetworkGame.playerList.Remove(entry);
 				break;
 			}
 		}
@@ -116,10 +115,10 @@ public class LobbyChat : MonoBehaviour
 	[RPC]
 	void TellServerOurName(string stName, NetworkMessageInfo info) {
 		
-		LobbyPlayerNode newEntry = new LobbyPlayerNode();
+		NetworkGame.PlayerInfo newEntry = new NetworkGame.PlayerInfo();
 		newEntry.playerName = stName;
 		newEntry.networkPlayer = info.sender;
-		playerList.Add(newEntry);
+		NetworkGame.playerList.Add(newEntry);
 
 		addGameChatMessage(stName + " joined the game");
 	}
@@ -138,8 +137,6 @@ public class LobbyChat : MonoBehaviour
 
 	void ShowChatWindow() {
 
-		// FIXME: this code generated problems before...
-		//playerName = PlayerPrefs.GetString("playerName", "");
 		playerName = MainScreen.playerName;
 
 		if(playerName == null || playerName == "") {
@@ -201,7 +198,7 @@ public class LobbyChat : MonoBehaviour
 		}
 	}
 		
-	void HitEnter (string stMsg)
+	void HitEnter(string stMsg)
 	{
 		
 		stMsg = stMsg.Replace ("\n", "");
@@ -212,9 +209,6 @@ public class LobbyChat : MonoBehaviour
 		usingChat = false;
 	}
 
-	/// <summary>
-	/// 
-	/// </summary>
 	private void addGameChatMessage(string stMsg) {
 		
 		ApplyGlobalChatText("" ,stMsg);
@@ -241,6 +235,4 @@ public class LobbyChat : MonoBehaviour
 
 		scrollPosition.y = 1000000;
 	}
-	
-
 }
