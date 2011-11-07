@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
 
 public class InGameChat : MonoBehaviour {
@@ -7,8 +8,8 @@ public class InGameChat : MonoBehaviour {
 	 * Press 't', type the message and hit enter to send.
 	 * Pressing 'esc' should cancel the chat and allow the player to play again.
 	 */
-
 	private bool showChat = false;
+	private float waitFocusDelay = 0.25f;
 	private Rect window;
 
 	private string inputField = "";
@@ -24,7 +25,7 @@ public class InGameChat : MonoBehaviour {
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
 
-	// Use this for initialization
+	// Used when the game start
 	void Awake() {
 
 		mainScreenScript = MainScreen.Script;
@@ -32,6 +33,7 @@ public class InGameChat : MonoBehaviour {
 		window = new Rect(30, 30, Screen.width-60, 40);
 	}
 
+	// Use this for initialization
 	void Start() {
 
 		chatEntries = new List<LobbyChat.LobbyChatEntry>();
@@ -42,6 +44,7 @@ public class InGameChat : MonoBehaviour {
 	
 	}
 
+	// GUI stuff
 	void OnGUI() {
 
 		bool userHasHitReturn = false;
@@ -50,15 +53,28 @@ public class InGameChat : MonoBehaviour {
 		Event e = Event.current;
 
 		if(e.keyCode == KeyCode.T && !showChat) {
-			// FIXME: or the 't' key appears on the input field, or the window appears without been focused. What to do?
-//			GUI.FocusWindow(7);
-//			GUI.FocusControl("Chat input field");
 
 			ShowChatWindow();
 		}
 
 		if(!showChat)
 			return;
+
+		/* This is needed because when the input field is created it doesn't have focus on it.
+		 * If we force the focus, the character 't' will show up in the input field. So, we wait
+		 * a little and the force the focus.
+		 */
+		if(waitFocusDelay <= 0) {
+
+			GUI.FocusWindow(7);
+			GUI.FocusControl("Chat input field");
+
+			waitFocusDelay = 0.25f;
+		}
+		else {
+
+			waitFocusDelay -= Time.deltaTime;
+		}
 
 		if(e.type == EventType.keyDown && e.character == '\n' && inputField.Length <= 0) {
 
@@ -86,6 +102,12 @@ public class InGameChat : MonoBehaviour {
 	 * CHAT STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		Clean the input field, shows the chat window on the screen
+	 * @param
+	 * @return	void
+	 */
 	void ShowChatWindow() {
 
 		playerName = MainScreen.playerName;
@@ -97,6 +119,11 @@ public class InGameChat : MonoBehaviour {
 		Debug.Log("Chat on");
 	}
 
+	/*
+	 * @brief		Clean the chat entry, dismiss the chat window
+	 * @param		
+	 * @return 	void
+	 */
 	void CloseChatWindow() {
 
 		showChat = false;
@@ -107,6 +134,11 @@ public class InGameChat : MonoBehaviour {
 		Debug.Log("Chat off");
 	}
 
+	/*
+	 * @brief		Watch for events during the use of the chat (<ESC> dismiss the window, <ENTER> sends the message 
+	 * @param		nId		Unity internal window code
+	 * @return	void
+	 */
 	void InGameChatWindow(int nId) {
 
 		Event e = Event.current;
@@ -130,14 +162,20 @@ public class InGameChat : MonoBehaviour {
 		inputField = GUILayout.TextField(inputField);
 	}
 
-	void HitEnter(string stMsg)
-	{
+	/*
+	 * @brief		Routine to the send the message typed in the chat window
+	 * @param		stMsg		String (from the input field) to be sended over the network
+	 * @return	void
+	 */
+	void HitEnter(string stMsg)	{
 		
 		stMsg = stMsg.Replace ("\n", "");
+		// FIXME
 		//networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, stMsg);
 		Debug.Log("Message sent across the network.");
 		inputField = ""; // Clear input line
 		GUI.UnfocusWindow(); // Deselect chat window
 		lastUnfocus = Time.time;
-	}
+	} 
+
 }

@@ -14,7 +14,6 @@ public class LobbyPlayerSetup: MonoBehaviour {
 	public bool showMenu = false;
 	public static LobbyPlayerSetup Script;
 
-
 	// http://forum.unity3d.com/threads/29058-error-with-no-side-effects
 	private int innerGUIController = 0;
 
@@ -46,6 +45,17 @@ public class LobbyPlayerSetup: MonoBehaviour {
 		window = GUI.Window(6, window, ShowPlayerSetup, "");
 	}
 
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * MENU STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		Show the player's name and setup 
+	 * @param		nId		Unity´s window reference
+	 * @return	void
+	 */
 	void ShowPlayerSetup(int nId) {
 
 		int nIdx = 0;
@@ -67,6 +77,11 @@ public class LobbyPlayerSetup: MonoBehaviour {
 
 	}
 
+	/*
+	 * @brief		Show this menu or not
+	 * @param		
+	 * @return	void
+	 */
 	public void ShowThisMenu() {
 		
 		showMenu = true;

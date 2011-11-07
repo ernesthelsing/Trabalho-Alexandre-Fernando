@@ -69,12 +69,23 @@ public class LobbyChat : MonoBehaviour
 	 * CLIENT STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		When someone connects to the server
+	 * @param
+	 * @return	void
+	 */
 	void OnConnectedToServer() {
 		
 		ShowChatWindow();
 		networkView.RPC("TellServerOurName", RPCMode.Server, playerName);
 	}
 
+	/*
+	 * @brief		When someone disconnects from the server
+	 * @param
+	 * @return	void
+	 */
 	void OnDisconnectedFromServer() {
 
 		CloseChatWindow();
@@ -85,6 +96,13 @@ public class LobbyChat : MonoBehaviour
 	 * SERVER STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		When the server is initialized. Show the chat window, create a new player (for the player hosting
+	 * 					the game) and send a message to everyone.
+	 * @param
+	 * @return	void
+	 */
 	void OnServerInitialized() {
 
 		ShowChatWindow();
@@ -97,6 +115,12 @@ public class LobbyChat : MonoBehaviour
 		addGameChatMessage(playerName + " joined the game.");
 	}
 
+	/*
+	 * @brief		Handles when some player disconnects from the server. Tell everyone about it, and remove the
+	 * 					player from the player list
+	 * @param		NetworkPlayer player	The player data structure on the network
+	 * @return	void
+	 */
 	void OnPlayerDisconnected(NetworkPlayer player) {
 
 		addGameChatMessage("Player disconnected from "+ player.ipAddress);
@@ -111,11 +135,22 @@ public class LobbyChat : MonoBehaviour
 		}
 	}
 
+	/*
+	 * @brief		Function when the player connects on the server
+	 * @param		NetworkPlayer player	The player data structure on the network
+	 * @return	void
+	 */
 	void OnPlayerConnected(NetworkPlayer player) {
 
 		addGameChatMessage("Player connected from "+ player.ipAddress);
 	}
 
+	/*
+	 * @brief		RPC Announces the player to the server
+	 * @param		stName	Player name
+	 * @param		info		Unity's data structure
+	 * @return	void
+	 */
 	[RPC]
 	void TellServerOurName(string stName, NetworkMessageInfo info) {
 		
@@ -132,6 +167,12 @@ public class LobbyChat : MonoBehaviour
 	 * CHAT STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		Clean the chat entry, dismiss the chat window
+	 * @param		
+	 * @return 	void
+	 */
 	void CloseChatWindow() {
 
 		showChat = false;
@@ -139,6 +180,11 @@ public class LobbyChat : MonoBehaviour
 		chatEntries = new List<LobbyChatEntry>();
 	}
 
+	/*
+	 * @brief		Clean the input field, shows the chat window on the screen
+	 * @param
+	 * @return	void
+	 */
 	void ShowChatWindow() {
 
 		playerName = MainScreen.playerName;
@@ -153,6 +199,11 @@ public class LobbyChat : MonoBehaviour
 		chatEntries = new List<LobbyChatEntry>();
 	}
 
+	/*
+	 * @brief		Chat window 
+	 * @param		nId		Unity internal window code
+	 * @return	void
+	 */
 	void GlobalChatWindow(int nId) {
 
 		GUILayout.BeginVertical();
@@ -186,6 +237,7 @@ public class LobbyChat : MonoBehaviour
 			
 			HitEnter(inputField);
 		}
+
 		GUI.SetNextControlName("Chat input field");
 		inputField = GUILayout.TextField(inputField);
 
@@ -202,6 +254,11 @@ public class LobbyChat : MonoBehaviour
 		}
 	}
 		
+	/*
+	 * @brief		Routine to the send the message typed in the chat window
+	 * @param		stMsg		String (from the input field) to be sended over the network
+	 * @return	void
+	 */
 	void HitEnter(string stMsg)
 	{
 		
@@ -213,15 +270,27 @@ public class LobbyChat : MonoBehaviour
 		usingChat = false;
 	}
 
+	/*
+	 * @brief		Add another message to the chat rooster
+	 * @param		stMsg		Message to be sent
+	 * @return	void
+	 */
 	private void addGameChatMessage(string stMsg) {
 		
 		ApplyGlobalChatText("" ,stMsg);
 		
 		if(Network.connections.Length > 0) {
+
 			networkView.RPC("ApplyGlobalChatText", RPCMode.Others, "", stMsg);
 		}
 	}
 
+	/*
+	 * @brief		RPC Adds new chat to lobby
+	 * @param		stName	Player who sent the message
+	 * @param		stMsg		Message to send
+	 * @return	void
+	 */
 	[RPC]
 	void ApplyGlobalChatText(string stName, string stMsg) {
 		

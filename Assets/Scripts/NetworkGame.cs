@@ -57,24 +57,45 @@ public class NetworkGame : MonoBehaviour {
 	 * SERVER STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		Start the master server, allowing others player in the game to find this game
+	 * @param		void
+	 * @return	void
+	 */
 	public void StartMasterServer() {
 		
 		Network.InitializeServer(networkMaxPlayers, networkConnectPort, false);
 		MasterServer.RegisterHost(gameTypeOnMasterServer, serverName, "My comment");
 	}
-	
+
+	/*
+	 * @brief		Fetches all online games on the master server
+	 * @param		void
+	 * @return	An array with the games
+	 */
 	public HostData[] GetOnlineHostList() {
 
 		// Update the list
 		MasterServer.RequestHostList(gameTypeOnMasterServer);
 		return MasterServer.PollHostList();
 	}
-	
+
+	/*
+	 * @brief		Returns the server name
+	 * @param		void
+	 * @return	String with the server name	
+	 */
 	public string GetServerName() {
 		
 		return serverName;
 	}
 
+	/*
+	 * @brief		Warns everybody that the server is lauching the game
+	 * @param		void
+	 * @return	void
+	 */
 	public void HostLaunchGame() {
 
 		if(!Network.isServer)
@@ -85,6 +106,11 @@ public class NetworkGame : MonoBehaviour {
 		networkView.RPC("LaunchGame", RPCMode.All);
 	}
 
+	/*
+	 * @brief		RPC to everybody that the game is lauching
+	 * @param		void
+	 * @return	void
+	 */
 	[RPC]
 	public void LaunchGame() {
 
@@ -92,9 +118,14 @@ public class NetworkGame : MonoBehaviour {
 		lauchingGame = true;
 	}
 
+	/*
+	 * @brief		If the game is laughing, show a window with the level loading progress
+	 * @param		void
+	 * @return	void
+	 */
 	public void LauchingGameGUI() {
 
-		// TODO: center on the screen
+		// TODO: center on the screen and actually fix everything
 
 		// Show a loading screen or something...
 		GUI.Box(new Rect(Screen.width*0.5f-140, Screen.height*0.5f-25, 280, 50), "");

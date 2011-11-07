@@ -38,6 +38,12 @@ public class MainScreen : MonoBehaviour {
 	private float boxWidth;
 	private float boxHeight;
 
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * UNITY STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
 	// Use this for initialization
 	void Awake()
 	{
@@ -88,12 +94,18 @@ public class MainScreen : MonoBehaviour {
 		currentMenu ();
 	}
 
-	/* ---------------------------------------------------------------------------------------------------------- */
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * MENU STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
 
-	/// <summary>
-	/// Main Menu
-	/// </summary>
-	void MainMenu ()
+	/*
+	 * @brief		Main menu for the game
+	 * @param		
+	 * @return	void
+	 */
+	void MainMenu()
 	{
 		
 		GUILayout.BeginArea (new Rect (screenX, screenY, menuWidth, menuHeight));
@@ -115,10 +127,18 @@ public class MainScreen : MonoBehaviour {
 		GUILayout.EndArea ();
 	}
 
-	/// <summary>
-	/// Host NetworkGame
-	/// </summary>
-	void HostGameMenu ()
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * HOST GAME STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		Menu for hosting a game
+	 * @param
+	 * @return	void
+	 */
+	void HostGameMenu()
 	{
 		
 		GUILayout.BeginArea (new Rect (subMenuWindow.x, subMenuWindow.y, subMenuWindow.width, subMenuWindow.height));
@@ -128,10 +148,12 @@ public class MainScreen : MonoBehaviour {
 		GUILayout.EndArea ();
 	}
 
-	/// <summary>
-	/// 
-	/// </summary>
-	void HostGameMenuWindow (int nId)
+	/*
+	 * @brief		Hosting game window
+	 * @param		nId	Unity's window code
+	 * @return	void
+	 */
+	void HostGameMenuWindow(int nId)
 	{
 		
 		GUILayout.BeginVertical ();
@@ -168,11 +190,18 @@ public class MainScreen : MonoBehaviour {
 		GUILayout.EndVertical ();
 	}
 
-	/// <summary>
-	/// Join Game Menu
-	/// </summary>
-	void JoinGameMenu ()
-	{
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * JOIN GAME STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		Menu for joining a game
+	 * @param		
+	 * @return	void
+	 */
+	void JoinGameMenu()	{
 		
 		subMenuWindow.x = Screen.width * 0.5f - subMenuWidth * 0.5f;
 		subMenuWindow.y = Screen.height * 0.5f - subMenuHeight * 0.5f;
@@ -187,11 +216,12 @@ public class MainScreen : MonoBehaviour {
 		GUILayout.EndArea ();
 	}
 
-	/// <summary>
-	/// 
-	/// </summary>
-	void JoinGameMenuWindow (int nId)
-	{
+	/*
+	 * @brief		Join game window
+	 * @param		nId	Unity's window code
+	 * @return	void
+	 */
+	void JoinGameMenuWindow (int nId)	{
 		
 		HostData[] hostsOnline = netScript.GetOnlineHostList();
 		
@@ -238,9 +268,17 @@ public class MainScreen : MonoBehaviour {
 		GUILayout.EndHorizontal ();
 	}
 
-	/// <summary>
-	/// Player Setup Menu
-	/// </summary>
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * LOBBY STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief		Menu for the lobby on the game.
+	 * @param
+	 * @return	void
+	 */
 	void LobbyMenu() {
 	
 		// Defines the menu area	
