@@ -286,7 +286,7 @@ public class LobbyChat : MonoBehaviour
 	}
 
 	/*
-	 * @brief		RPC Adds new chat to lobby
+	 * @brief		RPC Adds new chat message to the lobby
 	 * @param		stName	Player who sent the message
 	 * @param		stMsg		Message to send
 	 * @return	void

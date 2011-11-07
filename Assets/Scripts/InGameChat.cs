@@ -9,7 +9,8 @@ public class InGameChat : MonoBehaviour {
 	 * Pressing 'esc' should cancel the chat and allow the player to play again.
 	 */
 	private bool showChat = false;
-	private float waitFocusDelay = 0.25f;
+	public float waitForFocusTime = 0.5f;
+	private float waitFocusDelay;
 	private Rect window;
 
 	private string inputField = "";
@@ -18,6 +19,12 @@ public class InGameChat : MonoBehaviour {
 	private MainScreen mainScreenScript;
 	private float lastUnfocus = 0;
 	private string playerName;
+
+	private int windowStartX = 30;
+	private int windowStartY = 10;
+	private int windowHeight = 100;
+
+	private Vector2 scrollPosition = Vector2.zero;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -30,13 +37,14 @@ public class InGameChat : MonoBehaviour {
 
 		mainScreenScript = MainScreen.Script;
 	
-		window = new Rect(30, 30, Screen.width-60, 40);
+		window = new Rect(windowStartX, windowStartY, Screen.width-(windowStartX*2), windowHeight);
 	}
 
 	// Use this for initialization
 	void Start() {
 
 		chatEntries = new List<LobbyChat.LobbyChatEntry>();
+		waitFocusDelay = waitForFocusTime;
 	}
 	
 	// Update is called once per frame
@@ -47,11 +55,8 @@ public class InGameChat : MonoBehaviour {
 	// GUI stuff
 	void OnGUI() {
 
-		bool userHasHitReturn = false;
-		string stMsg = "";
-
 		Event e = Event.current;
-
+		
 		if(e.keyCode == KeyCode.T && !showChat) {
 
 			ShowChatWindow();
@@ -69,7 +74,7 @@ public class InGameChat : MonoBehaviour {
 			GUI.FocusWindow(7);
 			GUI.FocusControl("Chat input field");
 
-			waitFocusDelay = 0.25f;
+			waitFocusDelay = waitForFocusTime;
 		}
 		else {
 
@@ -128,6 +133,7 @@ public class InGameChat : MonoBehaviour {
 
 		showChat = false;
 		inputField = "";
+		waitFocusDelay = waitForFocusTime;
 		//chatEntries = new List<LobbyChat.LobbyChatEntry>();
 
 		// DEBUG
@@ -143,19 +149,38 @@ public class InGameChat : MonoBehaviour {
 
 		Event e = Event.current;
 
+		scrollPosition = GUILayout.BeginScrollView(scrollPosition);
+		{
+			foreach(LobbyChat.LobbyChatEntry entry in chatEntries) {
+
+				GUILayout.BeginHorizontal();
+
+				if(entry.name == "") {
+
+					GUILayout.Label(entry.text);
+				}
+				else {
+
+					// TODO: add different colors for different names
+					GUILayout.Label(entry.name + ": " + entry.text);
+				}
+
+				GUILayout.EndHorizontal();
+			}
+		}
+		GUILayout.EndScrollView();
+
 		if(e.type == EventType.keyDown && e.keyCode == KeyCode.Escape) {
 
-			// Pressing ESC at anytime should dismiss the chat window
+			// Pressing ESC at anytime should dismiss tRua Carlos Gomeshe chat window
 			Debug.Log("ESC pressed");
 
 			CloseChatWindow();
-			return;
 		}
 
 		if (e.type == EventType.keyDown && e.character == '\n' && inputField.Length > 0) {
 			
 			HitEnter(inputField);
-			CloseChatWindow();
 		}
 
 		GUI.SetNextControlName("Chat input field");
@@ -170,12 +195,38 @@ public class InGameChat : MonoBehaviour {
 	void HitEnter(string stMsg)	{
 		
 		stMsg = stMsg.Replace ("\n", "");
+		
 		// FIXME
 		//networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, stMsg);
-		Debug.Log("Message sent across the network.");
+		ApplyGlobalChatText(playerName, stMsg);
+
 		inputField = ""; // Clear input line
 		GUI.UnfocusWindow(); // Deselect chat window
 		lastUnfocus = Time.time;
 	} 
+	
+	/*
+	 * @brief		RPC Adds new chat message to the lobby
+	 * @param		stName	Player who sent the message
+	 * @param		stMsg		Message to send
+	 * @return	void
+	 */
+	[RPC]
+	void ApplyGlobalChatText(string stName, string stMsg) {
+		
+		LobbyChat.LobbyChatEntry entry = new LobbyChat.LobbyChatEntry();
+		entry.name = stName;
+		entry.text = stMsg;
+		
+		chatEntries.Add(entry);
+		
+		// Remove old entries
+		if(chatEntries.Count > 40) {
+			
+			chatEntries.RemoveAt(0);
+		}
+
+		scrollPosition.y = 1000000;
+	}
 
 }
