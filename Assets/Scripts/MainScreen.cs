@@ -33,8 +33,8 @@ public class MainScreen : MonoBehaviour {
 	private NetworkGame netScript = null;
 
 	// chat stuff
-	private Vector2 chatScrollPos = new Vector2 (10, 20);
-	private string inputField = "";
+	//private Vector2 chatScrollPos = new Vector2 (10, 20);
+	//private string inputField = "";
 	private float boxWidth;
 	private float boxHeight;
 

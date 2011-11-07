@@ -1,13 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// TODO: do distinguish between in-game e lobby chat
+/* According to the assignment, pressing 't' during the game should allow the players to chat.
+ * Press 't', type the message and hit enter to send.
+ * Pressing 'esc' should cancel the chat and allow the player to play again.
+ */
 
 public class LobbyChat : MonoBehaviour
 {
 
 	public bool usingChat = false;
 	public bool showChat = false;
+	public bool inGame = false;
 
 	private string inputField = "";
 
@@ -18,14 +22,14 @@ public class LobbyChat : MonoBehaviour
 	private float lastUnfocus = 0;
 	private Rect window;
 
+	private MainScreen mainScreenScript;
+
 	// Chat stuff
-	class LobbyChatEntry {
+	public class LobbyChatEntry {
 		public string name;
 		public string text;
 	}
 	private List<LobbyChatEntry> chatEntries = new List<LobbyChatEntry>();
-
-	private MainScreen mainScreenScript;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
