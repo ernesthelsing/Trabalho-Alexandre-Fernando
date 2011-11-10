@@ -15,16 +15,22 @@ public class InGameChat : MonoBehaviour {
 
 	private string inputField = "";
 
-	private List<LobbyChat.LobbyChatEntry> chatEntries = new List<LobbyChat.LobbyChatEntry>();
+	private List<LobbyChat.LobbyChatEntry> inGameChatEntries;
 	private MainScreen mainScreenScript;
 	private float lastUnfocus = 0;
 	private string playerName;
 
 	private int windowStartX = 30;
-	private int windowStartY = 10;
+	private int windowStartY = 1;
 	private int windowHeight = 100;
 
 	private Vector2 scrollPosition = Vector2.zero;
+
+	public GUISkin skin;
+	private bool typingChat = false;
+
+	public float receivedMessageTimer = 5.0f;
+	private float showReceivedMessageTimer;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -36,15 +42,18 @@ public class InGameChat : MonoBehaviour {
 	void Awake() {
 
 		mainScreenScript = MainScreen.Script;
-	
+		playerName = MainScreen.playerName;
+
+		inGameChatEntries = new List<LobbyChat.LobbyChatEntry>();
+
 		window = new Rect(windowStartX, windowStartY, Screen.width-(windowStartX*2), windowHeight);
 	}
 
 	// Use this for initialization
 	void Start() {
 
-		chatEntries = new List<LobbyChat.LobbyChatEntry>();
 		waitFocusDelay = waitForFocusTime;
+		showReceivedMessageTimer = receivedMessageTimer;
 	}
 	
 	// Update is called once per frame
@@ -55,15 +64,30 @@ public class InGameChat : MonoBehaviour {
 	// GUI stuff
 	void OnGUI() {
 
+		GUI.skin = skin;
+
 		Event e = Event.current;
 		
 		if(e.keyCode == KeyCode.T && !showChat) {
-
+			
+			typingChat = true;
 			ShowChatWindow();
 		}
 
 		if(!showChat)
 			return;
+
+		if(!typingChat) {
+
+			showReceivedMessageTimer -= Time.deltaTime;
+
+			// Message on screen expired
+			if(showReceivedMessageTimer <= 0.0f) {
+
+				showReceivedMessageTimer = receivedMessageTimer;
+				CloseChatWindow();
+			}
+		}
 
 		/* This is needed because when the input field is created it doesn't have focus on it.
 		 * If we force the focus, the character 't' will show up in the input field. So, we wait
@@ -115,7 +139,6 @@ public class InGameChat : MonoBehaviour {
 	 */
 	void ShowChatWindow() {
 
-		playerName = MainScreen.playerName;
 
 		showChat = true;
 		inputField = "";
@@ -134,7 +157,7 @@ public class InGameChat : MonoBehaviour {
 		showChat = false;
 		inputField = "";
 		waitFocusDelay = waitForFocusTime;
-		//chatEntries = new List<LobbyChat.LobbyChatEntry>();
+		//inGameChatEntries = new List<LobbyChat.LobbyChatEntry>();
 
 		// DEBUG
 		Debug.Log("Chat off");
@@ -151,7 +174,7 @@ public class InGameChat : MonoBehaviour {
 
 		scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 		{
-			foreach(LobbyChat.LobbyChatEntry entry in chatEntries) {
+			foreach(LobbyChat.LobbyChatEntry entry in inGameChatEntries) {
 
 				GUILayout.BeginHorizontal();
 
@@ -172,19 +195,21 @@ public class InGameChat : MonoBehaviour {
 
 		if(e.type == EventType.keyDown && e.keyCode == KeyCode.Escape) {
 
-			// Pressing ESC at anytime should dismiss tRua Carlos Gomeshe chat window
+			// Pressing ESC at anytime should dismiss the chat window
 			Debug.Log("ESC pressed");
 
 			CloseChatWindow();
 		}
 
-		if (e.type == EventType.keyDown && e.character == '\n' && inputField.Length > 0) {
-			
-			HitEnter(inputField);
-		}
+		if(typingChat) {
+			if (e.type == EventType.keyDown && e.character == '\n' && inputField.Length > 0) {
 
-		GUI.SetNextControlName("Chat input field");
-		inputField = GUILayout.TextField(inputField);
+				HitEnter(inputField);
+			}
+
+			GUI.SetNextControlName("Chat input field");
+			inputField = GUILayout.TextField(inputField);
+		}
 	}
 
 	/*
@@ -196,9 +221,8 @@ public class InGameChat : MonoBehaviour {
 		
 		stMsg = stMsg.Replace ("\n", "");
 		
-		// FIXME
-		//networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, stMsg);
-		ApplyGlobalChatText(playerName, stMsg);
+		networkView.RPC("ApplyInGameChatText", RPCMode.All, playerName, stMsg);
+		Debug.Log("RPC sent to all");
 
 		inputField = ""; // Clear input line
 		GUI.UnfocusWindow(); // Deselect chat window
@@ -212,21 +236,31 @@ public class InGameChat : MonoBehaviour {
 	 * @return	void
 	 */
 	[RPC]
-	void ApplyGlobalChatText(string stName, string stMsg) {
-		
+	void ApplyInGameChatText(string stName, string stMsg) {
+
+		Debug.Log(Network.connections.Length);
+
+		Debug.Log("RPC " + stName + ": " + stMsg);
+
 		LobbyChat.LobbyChatEntry entry = new LobbyChat.LobbyChatEntry();
 		entry.name = stName;
 		entry.text = stMsg;
 		
-		chatEntries.Add(entry);
+		inGameChatEntries.Add(entry);
 		
 		// Remove old entries
-		if(chatEntries.Count > 40) {
+		if(inGameChatEntries.Count > 20) {
 			
-			chatEntries.RemoveAt(0);
+			inGameChatEntries.RemoveAt(0);
 		}
 
 		scrollPosition.y = 1000000;
-	}
 
+		// I received a message, so shows it on the screen
+		if(stName != playerName) {
+
+			showChat = true;
+		}
+
+	}
 }

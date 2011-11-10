@@ -21,7 +21,7 @@ public class MainScreen : MonoBehaviour {
 
 	// Background variables
 	public int guiDepth = 0;
-	public string levelToLoad = "";
+	//public string levelToLoad = "";
 	// this has to correspond to a level (file>build settings)
 	public Texture2D mainScreenBG;
 	// the logo to splash;
@@ -70,7 +70,7 @@ public class MainScreen : MonoBehaviour {
 		subMenuWindow.height = 150;
 		
 		// Network stuff
-		netScript = NetworkGame.Script;
+		netScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
 		serverName = netScript.GetServerName();
 
 		if(playerName == null || playerName == "") {
@@ -238,6 +238,13 @@ public class MainScreen : MonoBehaviour {
 				
 				// No hosts found
 				GUILayout.Label ("No host found.");
+
+				// FIXME: remove this code
+				if(!netScript.UseMasterServer) {
+					if (GUILayout.Button ("Connect")) {
+						netScript.ConnectWithServer(null);
+					}
+				}
 			} else {
 				
 				foreach (HostData uniqueHost in hostsOnline) {
@@ -254,7 +261,7 @@ public class MainScreen : MonoBehaviour {
 					if (GUILayout.Button ("Connect")) {
 						
 						// FIXME: network stuff goes to the network script
-						Network.Connect (uniqueHost);
+						netScript.ConnectWithServer(uniqueHost);
 						currentMenu = LobbyMenu;
 					}
 				}
@@ -292,7 +299,7 @@ public class MainScreen : MonoBehaviour {
 			if(GUI.Button(new Rect(Screen.width * 0.5f - buttonWidth * 0.5f,
 							Screen.height - buttonHeight*2, buttonWidth, buttonHeight), "Start server")) {
 
-					NetworkGame.Script.HostLaunchGame();
+					netScript.HostLaunchGame();
 			}
 		}
 		else {

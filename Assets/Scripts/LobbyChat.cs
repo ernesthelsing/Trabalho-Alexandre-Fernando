@@ -43,6 +43,7 @@ public class LobbyChat : MonoBehaviour
 		//window = new Rect(Screen.width * 0.5f - width * 0.5f, Screen.height - height+5, width, height);
 		//window = mainScreenScript.GetAreaForChat();
 		window = new Rect(30, 30, width, height);
+		
 	}
 
 	void OnGUI() {

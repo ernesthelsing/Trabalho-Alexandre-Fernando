@@ -10,7 +10,15 @@ public class NetworkGame : MonoBehaviour {
 	public string gameTypeOnMasterServer = "MyGameType";
 	
 	public int networkMaxPlayers = 4;
+	public string connectToIP = "127.0.0.1";
 	public int networkConnectPort = 25001;
+
+	// 'Gambitech' to user or not the master server	
+	private bool useMasterServer = false;
+	public bool UseMasterServer {
+		get { return useMasterServer; }
+		set { useMasterServer = value; }
+	}
 
 	public int mySlotInPlayerList = 0;
 	
@@ -23,7 +31,8 @@ public class NetworkGame : MonoBehaviour {
 	public static List<PlayerInfo> playerList = new List<PlayerInfo>();
 
 	private bool lauchingGame = false;
-	
+	private int lastLevelIdx = 0;
+
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
@@ -32,8 +41,11 @@ public class NetworkGame : MonoBehaviour {
 	void Awake() {
 		
 		Script = this;
+
+		//http://unity3d.com/support/documentation/Components/net-NetworkLevelLoad.html
+		DontDestroyOnLoad(this);
+		networkView.group = 1;
 	}
-	
 	
 	// Use this for initialization
 	void Start () {
@@ -47,8 +59,8 @@ public class NetworkGame : MonoBehaviour {
 
 	void OnGUI() {
 
-		if(lauchingGame)
-			LauchingGameGUI();
+		//if(lauchingGame)
+			//LauchingGameGUI();
 
 	}
 	
@@ -66,7 +78,10 @@ public class NetworkGame : MonoBehaviour {
 	public void StartMasterServer() {
 		
 		Network.InitializeServer(networkMaxPlayers, networkConnectPort, false);
-		MasterServer.RegisterHost(gameTypeOnMasterServer, serverName, "My comment");
+
+		if(useMasterServer) {
+			MasterServer.RegisterHost(gameTypeOnMasterServer, serverName, "My comment");
+		}
 	}
 
 	/*
@@ -103,7 +118,10 @@ public class NetworkGame : MonoBehaviour {
 
 		MasterServer.UnregisterHost();
 
-		networkView.RPC("LaunchGame", RPCMode.All);
+		Network.RemoveRPCsInGroup(0);
+		Network.RemoveRPCsInGroup(1);
+
+		networkView.RPC("LaunchLevel", RPCMode.All, Application.loadedLevel+1);
 	}
 
 	/*
@@ -112,20 +130,35 @@ public class NetworkGame : MonoBehaviour {
 	 * @return	void
 	 */
 	[RPC]
-	public void LaunchGame() {
+	public void LaunchLevel(int levelIdx) {
+
+		Debug.Log("[LaunchLevel]: " + levelIdx);
+		lastLevelIdx = levelIdx;
 
 		Network.isMessageQueueRunning = false;
+
+		Network.SetLevelPrefix(levelIdx);
+		Application.LoadLevel(levelIdx);
+
+		// TODO: the error was in the following line
+		Network.isMessageQueueRunning = true;
+
 		lauchingGame = true;
 	}
 
 	/*
-	 * @brief		If the game is laughing, show a window with the level loading progress
+	 * @brief		If the game is loading, show a window with the level loading progress
 	 * @param		void
 	 * @return	void
 	 */
 	public void LauchingGameGUI() {
 
+		return;
+		//
 		// TODO: center on the screen and actually fix everything
+		//
+		//
+		// FIXME: the error on in game chat has to be here
 
 		// Show a loading screen or something...
 		GUI.Box(new Rect(Screen.width*0.5f-140, Screen.height*0.5f-25, 280, 50), "");
@@ -142,4 +175,20 @@ public class NetworkGame : MonoBehaviour {
 		}	
 	}
 
+	/*
+	 * @brief		Connects to a specified server
+	 * @param
+	 * @return	void
+	 */
+	public void ConnectWithServer(HostData hostToConnect) {
+
+		if(hostToConnect != null) {
+
+			Network.Connect(hostToConnect);
+		}
+		else {
+
+			Network.Connect(connectToIP, networkConnectPort);	
+		}
+	}
 }
