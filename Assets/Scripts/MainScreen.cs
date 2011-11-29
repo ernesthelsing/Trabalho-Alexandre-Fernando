@@ -297,7 +297,7 @@ public class MainScreen : MonoBehaviour {
 			float buttonWidth = 80;
 
 			if(GUI.Button(new Rect(Screen.width * 0.5f - buttonWidth * 0.5f,
-							Screen.height - buttonHeight*2, buttonWidth, buttonHeight), "Start server")) {
+							Screen.height - buttonHeight*2, buttonWidth, buttonHeight), "Start game")) {
 
 					netScript.HostLaunchGame();
 			}

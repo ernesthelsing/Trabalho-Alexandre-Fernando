@@ -33,6 +33,11 @@ public class NetworkGame : MonoBehaviour {
 	private bool lauchingGame = false;
 	private int lastLevelIdx = 0;
 
+	public GameObject serverPlayerAvatar;
+	public GameObject clientPlayerAvatar;
+
+	private Vector3 v3SpawnPosition = new Vector3(0, 2, 0);
+
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
@@ -191,4 +196,23 @@ public class NetworkGame : MonoBehaviour {
 			Network.Connect(connectToIP, networkConnectPort);	
 		}
 	}
+
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * GAMEPLAY STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+	
+	public void SpawnPlayers() {
+
+		if(Network.isServer) {
+
+			Network.Instantiate(serverPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
+		}
+		else {
+
+			Network.Instantiate(clientPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
+		}
+	}
+
 }
