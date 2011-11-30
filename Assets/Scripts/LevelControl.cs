@@ -64,6 +64,11 @@ public class LevelControl : MonoBehaviour {
 	}
 	
 	void OnGUI(){
+
+		// DEBUG
+		// Added to show the timer synchronization
+		GUI.Label( new Rect(200, 75, 100, 20), "Timer: " + InGamePlay.Script.GetTimeCounter());
+		
 		
 		GUILayout.Label("Lives: " + playerControl.lives);
 		
@@ -106,7 +111,7 @@ public class LevelControl : MonoBehaviour {
 		//GUILayout.Label("Time Startup: " + Time.realtimeSinceStartup);
 		//GUILayout.Label("Time DeltaTime: " + Time.deltaTime);
 		//GUILayout.Label("Frame Count: " + Time.frameCount);
-		
+
 	}
 	
 	void MainMenu(){
