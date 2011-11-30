@@ -36,7 +36,10 @@ public class NetworkGame : MonoBehaviour {
 	public GameObject serverPlayerAvatar;
 	public GameObject clientPlayerAvatar;
 
-	private Vector3 v3SpawnPosition = new Vector3(-21, 0, -5);
+	public GameObject serverSpawnPoint;
+
+	//private Vector3 v3SpawnPosition = new Vector3(-21, 0, -5);
+	private Vector3 v3SpawnPosition = Vector3.zero;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -50,6 +53,7 @@ public class NetworkGame : MonoBehaviour {
 		//http://unity3d.com/support/documentation/Components/net-NetworkLevelLoad.html
 		DontDestroyOnLoad(this);
 		networkView.group = 1;
+
 	}
 	
 	// Use this for initialization
@@ -220,6 +224,20 @@ public class NetworkGame : MonoBehaviour {
 			Network.Instantiate(clientPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
 			// Adds to the LevelControl script
 			LevelControl.Script.SetPlayerGameObject(clientPlayerAvatar);
+		}
+	}
+
+	public void InitializeSpawnPoint() {
+
+		serverSpawnPoint = GameObject.FindWithTag("Respawn");
+
+		if(serverSpawnPoint != null) {
+
+			v3SpawnPosition = serverSpawnPoint.transform.position;
+		}
+		else {
+
+			Debug.LogError("Respawn object not found.");
 		}
 	}
 

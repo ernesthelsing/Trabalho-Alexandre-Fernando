@@ -25,6 +25,8 @@ public class InGamePlay : MonoBehaviour {
 
 		// DEBUG
 		Debug.Log("Spawning player.");
+		// FIXME:
+		NetworkGame.Script.InitializeSpawnPoint();
 		NetworkGame.Script.SpawnPlayers();
 
 		// I'm not controlling this player

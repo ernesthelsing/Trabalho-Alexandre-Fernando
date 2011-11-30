@@ -28,9 +28,8 @@ public class LevelControl : MonoBehaviour {
 	public float width;
 	public float height;
 	private bool showMenu;
-	
-	private bool masterMode = false;
-	public Camera masterModeCamera;
+
+	public AudioClip EndReachedSound;
 	
 	void Awake(){
 		
@@ -116,13 +115,13 @@ public class LevelControl : MonoBehaviour {
 	
 	void MainMenu(){
 		
-		if(GUILayout.Button("Start"))	{
+//		if(GUILayout.Button("Start"))	{
 
 			menuTime = Time.time - menuTime;
 			Toggle();
 			playerControl.SetMotionStatus(true);	
 			gameStarted = true;
-		}
+	//	}
 	}
 	
 	void DeathMenu(){
@@ -147,12 +146,7 @@ public class LevelControl : MonoBehaviour {
 		//if(other.gameObject.name.Equals("First Person Controller"))
 		if(other.gameObject.tag.Equals("Player")) {
 
-			endOfGame = true;
-			endTime = Time.realtimeSinceStartup - menuTime;
-			Debug.Log("Player got to end and menuTime is " + menuTime);
-			playerTimeString = string.Format("{0:0.00}", endTime);
-			Toggle();
-			Debug.Log("Player got to end");
+			PlayerReachedEndArea(other.gameObject);
 		}
 	}
 
@@ -164,6 +158,32 @@ public class LevelControl : MonoBehaviour {
 			player = goPlayer;
 			playerControl = player.GetComponent<PlayerControl>();
 		}
+	}
+
+	/*
+	 * @brief		Stuff that is done when the player reaches the end area
+	 * @param		
+	 * @return	void
+	 */
+	void PlayerReachedEndArea(GameObject goPlayer) {
+
+		// Play a sound
+		if(EndReachedSound != null) {
+
+			audio.PlayOneShot(EndReachedSound);
+		}
+
+		// FIXME: we should do this as a RPC call...
+		// Moves the player back to the respawn point
+		playerControl.MoveBackToStart();
+
+
+		//	endOfGame = true;
+			endTime = Time.realtimeSinceStartup - menuTime;
+			Debug.Log("Player got to end and menuTime is " + menuTime);
+			playerTimeString = string.Format("{0:0.00}", endTime);
+			//Toggle();
+			Debug.Log("Player got to end");
 	}
 
 }
