@@ -36,7 +36,7 @@ public class NetworkGame : MonoBehaviour {
 	public GameObject serverPlayerAvatar;
 	public GameObject clientPlayerAvatar;
 
-	private Vector3 v3SpawnPosition = new Vector3(0, 2, 0);
+	private Vector3 v3SpawnPosition = new Vector3(-21, 0, -5);
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -158,13 +158,13 @@ public class NetworkGame : MonoBehaviour {
 	 */
 	public void LauchingGameGUI() {
 
-		return;
 		//
 		// TODO: center on the screen and actually fix everything
 		//
 		//
 		// FIXME: the error on in game chat has to be here
 
+		/*
 		// Show a loading screen or something...
 		GUI.Box(new Rect(Screen.width*0.5f-140, Screen.height*0.5f-25, 280, 50), "");
 
@@ -178,6 +178,7 @@ public class NetworkGame : MonoBehaviour {
 			GUI.Label(new Rect(Screen.width/4+200,Screen.height/2-25,285,150), 
 					"Starting..Loading the game: " + Mathf.Floor(Application.GetStreamProgressForLevel((Application.loadedLevel+1))*100) + " %" );
 		}	
+		*/
 	}
 
 	/*
@@ -208,6 +209,9 @@ public class NetworkGame : MonoBehaviour {
 		if(Network.isServer) {
 
 			Network.Instantiate(serverPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
+
+			// Adds to the LevelControl script
+			LevelControl.Script.SetPlayerGameObject(serverPlayerAvatar);
 		}
 		else {
 
