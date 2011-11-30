@@ -37,12 +37,6 @@ public class LevelControl : MonoBehaviour {
 		Script = this;
 
 		menuTime = Time.time;
-
-/*
-		masterModeCamera = GameObject.FindWithTag("EditorCamera").GetComponent<Camera>();
-		if(masterModeCamera == null)
-			Debug.LogError("Master camera not found!");
-	*/	
 	}
 	
 	// Use this for initialization
@@ -61,26 +55,8 @@ public class LevelControl : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
-	
-		// TODO: added to change the camera to Master Mode
-		if(Input.GetKeyDown("tab")) {
-
-			ToogleMasterMode();
-		}
 	}
 
-	void ToogleMasterMode() {
-		
-		playerControl.SetMotionStatus(masterMode);
-
-		masterMode = !masterMode;
-
-		// switch cameras
-		Camera.main.enabled = masterMode;
-		masterModeCamera.enabled = !masterMode;
-
-	}
-	
 	void Toggle(){
 	
 		showMenu = !showMenu;
@@ -109,14 +85,20 @@ public class LevelControl : MonoBehaviour {
 		{
 			
 			GUILayout.Label("You finished the level in " + playerTimeString + " seconds");
-			if(GUILayout.Button("Restart"))
-			Application.LoadLevel("Game");
+
+			if(GUILayout.Button("Restart")) {
+
+				// FIXME: this is likely to NOT work on network. I guess it's best to just respawn the player
+				//Application.LoadLevel("Game");
+				// DEBUG
+				Debug.Log("Should load the level again. Waiting to be fixed.");
+			}
 			playerControl.SetMotionStatus(false);
 		}
 		else
 		{
+
 			MainMenu();
-			
 		}
 		
 		GUILayout.EndArea();
@@ -129,16 +111,13 @@ public class LevelControl : MonoBehaviour {
 	
 	void MainMenu(){
 		
-		if(GUILayout.Button("Start"))
-		{
+		if(GUILayout.Button("Start"))	{
+
 			menuTime = Time.time - menuTime;
 			Toggle();
 			playerControl.SetMotionStatus(true);	
 			gameStarted = true;
-			
 		}
-		
-		
 	}
 	
 	void DeathMenu(){
@@ -156,13 +135,13 @@ public class LevelControl : MonoBehaviour {
 		
 		
 		GUILayout.EndArea();
-		
 	}
 	
 	void OnTriggerEnter(Collider other){
 		
-		if(other.gameObject.name.Equals("First Person Controller"))
-		{
+		//if(other.gameObject.name.Equals("First Person Controller"))
+		if(other.gameObject.tag.Equals("Player")) {
+
 			endOfGame = true;
 			endTime = Time.realtimeSinceStartup - menuTime;
 			Debug.Log("Player got to end and menuTime is " + menuTime);
@@ -170,8 +149,6 @@ public class LevelControl : MonoBehaviour {
 			Toggle();
 			Debug.Log("Player got to end");
 		}
-		
-		
 	}
 
 	//

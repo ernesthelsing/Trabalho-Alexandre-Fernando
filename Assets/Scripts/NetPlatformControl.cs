@@ -52,8 +52,6 @@ public class NetPlatformControl : MonoBehaviour {
 		v3Movement.x = transform.position.x;
 		v3Movement.z = transform.position.z;
 
-		Debug.Log(v3Movement);
-
 		// Moves the platform
 		transform.position = v3Movement;
 	}

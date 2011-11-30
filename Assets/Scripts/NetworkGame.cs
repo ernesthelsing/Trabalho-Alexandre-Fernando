@@ -137,7 +137,9 @@ public class NetworkGame : MonoBehaviour {
 	[RPC]
 	public void LaunchLevel(int levelIdx) {
 
+		// DEBUG
 		Debug.Log("[LaunchLevel]: " + levelIdx);
+
 		lastLevelIdx = levelIdx;
 
 		Network.isMessageQueueRunning = false;
@@ -216,6 +218,8 @@ public class NetworkGame : MonoBehaviour {
 		else {
 
 			Network.Instantiate(clientPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
+			// Adds to the LevelControl script
+			LevelControl.Script.SetPlayerGameObject(clientPlayerAvatar);
 		}
 	}
 
