@@ -45,10 +45,10 @@ public class NetPlatformControl : MonoBehaviour {
 		timeStarted = Time.time;
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	// Using fixed update, so the player on the platform doesn't jitter 
+	void FixedUpdate () {
 
-		v3Movement.y = MovePlatform(Time.time);
+		v3Movement.y = MovePlatform(InGamePlay.Script.GetTimeCounter());
 		v3Movement.x = transform.position.x;
 		v3Movement.z = transform.position.z;
 
