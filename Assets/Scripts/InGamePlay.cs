@@ -6,7 +6,9 @@ public class InGamePlay : MonoBehaviour {
 	// PUBLIC
 	// Points to itself
 	public static InGamePlay Script;
+
 	public float TimeCounter = 0.0f;
+	public float LevelTimer = 100;	// Level time in seconds. Must be between 120 and 300 seconds;
 	
 	// PRIVATE
 
@@ -41,8 +43,9 @@ public class InGamePlay : MonoBehaviour {
 		
 		if(Network.isServer) {
 
-			// Updates the timer
+			// Updates the network timer
 			TimeCounter += Time.deltaTime;
+
 		}
 	
 	}

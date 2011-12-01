@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -30,6 +31,11 @@ public class LevelControl : MonoBehaviour {
 	private bool showMenu;
 
 	public AudioClip EndReachedSound;
+	public float levelTimer = 120;
+
+	private string stLevelTimer;
+	private TimeSpan tsLevelTimer;
+	private float fNetTimer;
 	
 	void Awake(){
 		
@@ -66,15 +72,23 @@ public class LevelControl : MonoBehaviour {
 
 		// DEBUG
 		// Added to show the timer synchronization
-		GUI.Label( new Rect(200, 75, 100, 20), "Timer: " + InGamePlay.Script.GetTimeCounter());
+
+		fNetTimer = InGamePlay.Script.GetTimeCounter();
+		GUI.Label( new Rect(200, 75, 100, 20), "NetTimer: " + fNetTimer);
+
+		// Show the level timer
+		tsLevelTimer = TimeSpan.FromSeconds(levelTimer - fNetTimer);
+		stLevelTimer = string.Format("{0:D2}:{1:D2}", tsLevelTimer.Minutes, tsLevelTimer.Seconds);
+		GUILayout.Label("Time: " + stLevelTimer );
 		
-		
-		GUILayout.Label("Lives: " + playerControl.lives);
-		
+		// FIXME @REDES@
+		// No lives anymore
+		/*
 		if(playerControl.lives <= 0)
 		{
 			DeathMenu();
 		}
+		*/
 		
 		if(!showMenu) return;
 		
@@ -173,9 +187,10 @@ public class LevelControl : MonoBehaviour {
 			audio.PlayOneShot(EndReachedSound);
 		}
 
-		// FIXME: we should do this as a RPC call...
 		// Moves the player back to the respawn point
-		playerControl.MoveBackToStart();
+		Vector3 start = goPlayer.GetComponent<PlayerControl>().StartingPosition;
+		goPlayer.transform.position = start;
+
 
 
 		//	endOfGame = true;

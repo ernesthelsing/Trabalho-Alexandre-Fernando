@@ -17,11 +17,15 @@ public class DeathZone : MonoBehaviour {
 		
 		if(other != null)
 		{
-			if(other.gameObject.name.Equals("First Person Controller"))
+			//if(other.gameObject.name.Equals("First Person Controller"))
+			if(other.gameObject.tag == "Player") 
 			{
 				Vector3 start = other.gameObject.GetComponent<PlayerControl>().StartingPosition;
 				other.gameObject.transform.position = start;
-				other.gameObject.GetComponent<PlayerControl>().lives -= 1;
+				// FIXME @REDES@
+				// No lives anymore. Throw the player back to the starting line
+				//
+				//other.gameObject.GetComponent<PlayerControl>().lives -= 1;
 				Debug.Log("Player died");
 			}
 			

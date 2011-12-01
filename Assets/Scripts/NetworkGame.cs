@@ -151,7 +151,6 @@ public class NetworkGame : MonoBehaviour {
 		Network.SetLevelPrefix(levelIdx);
 		Application.LoadLevel(levelIdx);
 
-		// TODO: the error was in the following line
 		Network.isMessageQueueRunning = true;
 
 		lauchingGame = true;

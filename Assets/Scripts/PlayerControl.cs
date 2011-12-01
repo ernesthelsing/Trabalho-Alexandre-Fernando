@@ -10,7 +10,6 @@ public class PlayerControl: MonoBehaviour {
 	// Points to itself
 	public static PlayerControl Script;
 	public AudioClip jump;
-	public int lives;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -25,11 +24,6 @@ public class PlayerControl: MonoBehaviour {
 	void Start () {
 		
 		startingPosition = transform.position;
-		lives = 3;
-
-		// DEBUG
-		Debug.Log("Starting Position: " + StartingPosition);
-	
 	}
 	
 	// Update is called once per frame
@@ -84,7 +78,8 @@ public class PlayerControl: MonoBehaviour {
 
 
 		// Moving back
-		transform.position = StartingPosition; 
+		Vector3 start = StartingPosition;
+		transform.position = start; 
 
 		// DEBUG
 		Debug.Log("Moving back..." + transform.position + "/"+ startingPosition);
