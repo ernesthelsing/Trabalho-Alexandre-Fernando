@@ -4,46 +4,44 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class LevelControl : MonoBehaviour {
-	
-	//private GameObject[] platforms;
 
+	// PUBLIC
 	// Points to itself
 	public static LevelControl Script;
-	
-	private bool endOfGame = false;
-	
-	private float endTime = 0.0f;
-	//private float playerTime = 0.0f;
-	private float menuTime = 0.0f;
-	
-	private string playerTimeString;
-	
-	private PlayerControl playerControl;
-	
+
 	public GameObject player;
-	
 	static public bool gameStarted = false;
-	
 	//menu variables//
-	//public GUISkin skin;
+	public GUISkin skin;
 	public float width;
 	public float height;
-	private bool showMenu;
-
 	public AudioClip EndReachedSound;
-	public float levelTimer = 120;
-
+	public float levelTimer = 120; // Time of a level game, in seconds. Must be within 120 and 300.
+	
+	// PRIVATE
+	private bool endOfGame = false;
+	private float endTime = 0.0f;
+	private float menuTime = 0.0f;
+	private string playerTimeString;
+	private PlayerControl playerControl;
+	private bool showMenu;
 	private string stLevelTimer;
 	private TimeSpan tsLevelTimer;
 	private float fNetTimer;
 	
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * UNITY STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
 	void Awake(){
 		
 		Script = this;
 
 		menuTime = Time.time;
 	}
-	
+
 	// Use this for initialization
 	void Start () {
 		
@@ -62,35 +60,39 @@ public class LevelControl : MonoBehaviour {
 		
 	}
 
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * SCRIPT STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
 	void Toggle(){
 	
 		showMenu = !showMenu;
 		
 	}
 	
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * IN-GAME HUD
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
 	void OnGUI(){
 
-		// DEBUG
-		// Added to show the timer synchronization
+		// Set up the skin preferences
+		GUI.skin = skin;
 
-		fNetTimer = InGamePlay.Script.GetTimeCounter();
-		GUI.Label( new Rect(200, 75, 100, 20), "NetTimer: " + fNetTimer);
 
 		// Show the level timer
 		tsLevelTimer = TimeSpan.FromSeconds(levelTimer - fNetTimer);
 		stLevelTimer = string.Format("{0:D2}:{1:D2}", tsLevelTimer.Minutes, tsLevelTimer.Seconds);
 		GUILayout.Label("Time: " + stLevelTimer );
+
+		// DEBUG
+		fNetTimer = InGamePlay.Script.GetTimeCounter();
+		GUILayout.Label("NetTimer: " + fNetTimer);
 		
-		// FIXME @REDES@
-		// No lives anymore
-		/*
-		if(playerControl.lives <= 0)
-		{
-			DeathMenu();
-		}
-		*/
-		
-		if(!showMenu) return;
+		// FIXME
+		//if(!showMenu) return;
 		
 		playerControl.SetMotionStatus(false);
 		
@@ -99,6 +101,8 @@ public class LevelControl : MonoBehaviour {
 		
 		GUILayout.BeginArea(new Rect(screenX,screenY,width,height) );
 		
+		// FIXME
+
 		if(endOfGame)
 		{
 			
@@ -127,6 +131,16 @@ public class LevelControl : MonoBehaviour {
 
 	}
 	
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * SCRIPT STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
+	/*
+	 * @brief
+	 * @return
+	 */
 	void MainMenu(){
 		
 //		if(GUILayout.Button("Start"))	{
