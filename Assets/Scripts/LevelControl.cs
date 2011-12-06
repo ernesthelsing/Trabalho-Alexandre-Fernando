@@ -21,6 +21,12 @@ public class LevelControl : MonoBehaviour {
 	public AudioClip EndReachedSound;
 	public float levelTimer = 120; // Time of a level game, in seconds. Must be within 120 and 300.
 	
+	public GameObject[] allPlatforms = null; // All platforms from the leve
+	public float platformMinAmplitude = 1.0f;
+	public float platformMaxAmplitude = 10.0f;
+	public float platformMinPeriod = 0.2f;
+	public float platformMaxPeriod = 4.0f;
+
 	// PRIVATE
 	private bool endOfGame = false;
 	private float endTime = 0.0f;
@@ -69,8 +75,10 @@ public class LevelControl : MonoBehaviour {
 			playerControl = player.GetComponent<PlayerControl>();
 		}
 		
-		//platforms = GameObject.FindGameObjectsWithTag("Platform");
-	
+		// Array for the plaforms
+		allPlatforms = GameObject.FindGameObjectsWithTag("Platform");
+
+		GatherAllPlatformInfo();	
 	}
 	
 	// Update is called once per frame
@@ -78,7 +86,7 @@ public class LevelControl : MonoBehaviour {
 
 		/* From InGamePlay */
 
-		// This is the main timer, which is synchronized through network to all clients
+		// This is the main game timer, which is synchronized through network to all clients
 		if(Network.isServer) {
 
 			// Updates the network timer
@@ -98,7 +106,6 @@ public class LevelControl : MonoBehaviour {
 	void Toggle(){
 	
 		showMenu = !showMenu;
-		
 	}
 	
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -248,7 +255,7 @@ public class LevelControl : MonoBehaviour {
 		goPlayer.transform.position = start;
 		
 
-
+		// FIXME: clean the stuff below
 		//	endOfGame = true;
 			endTime = Time.realtimeSinceStartup - menuTime;
 			Debug.Log("Player got to end and menuTime is " + menuTime);
@@ -289,8 +296,51 @@ public class LevelControl : MonoBehaviour {
 		}
 	}
 
+	/*
+	 * @brief		Returns the main game timer
+	 * @param		void
+	 * @return	float with them main game timer
+	 */
 	public float GetTimeCounter() {
 
 		return TimeCounter;
+	}
+
+	/*
+	 * @brief		Gather all platforms game objects in an array. Executed in the server and in clients also
+	 * @param		void
+	 * @return	void
+	 */ 
+	public void GatherAllPlatformInfo() {
+
+		// Create random values for the platforms
+		if(Network.isServer) {
+
+			for(int nIdx = 0; nIdx < allPlatforms.Length; nIdx++) {
+
+				// Randomizes a new amplitude for this platform
+				float aAmplitude = UnityEngine.Random.Range(platformMinAmplitude,platformMaxAmplitude);
+				// Randomizes a new period for the platform (Speed)
+				float bPeriod = UnityEngine.Random.Range(platformMinPeriod, platformMaxPeriod);
+
+				// Changes this platform in all connected games
+				networkView.RPC("SetPlatformStartUpValues", RPCMode.All, nIdx, aAmplitude, bPeriod);
+			}
+		}
+	}
+
+	/*
+	 * @brief		For each platform, calls the procedure which will set up it's initial values
+	 * @param		nPlatformIdx	The index of the platform in the array list of all platforms
+	 * @param		aAmplitude		Amplitude of the platform
+	 * @param		bPeriod				Period (speed) of the platform
+	 * @return	void
+	 */
+	[RPC]
+	private void SetPlatformStartUpValues(int nPlatformIdx, float aAmplitude, float bPeriod) {
+
+		GameObject thisPlatform = allPlatforms[nPlatformIdx];
+
+		thisPlatform.GetComponent<NetPlatformControl>().SetupPlatform(aAmplitude, bPeriod);
 	}
 }

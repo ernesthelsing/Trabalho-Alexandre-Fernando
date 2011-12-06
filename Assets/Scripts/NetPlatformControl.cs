@@ -11,8 +11,6 @@ public class NetPlatformControl : MonoBehaviour {
 	 * NEW WAY:
 	 * Using sine function, we can always position the platform over time between the range [-1,1]
 	 *
-	 * @author		Alexandre Ramos Coelho
-	 * @revision	27-11-2011
 	 */
 
 	// PUBLIC
@@ -25,7 +23,6 @@ public class NetPlatformControl : MonoBehaviour {
 	private Vector3 v3Movement = Vector3.zero;
 	private Vector3 v3StartPos = Vector3.zero;
 	private float timeStarted;
-
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -66,5 +63,14 @@ public class NetPlatformControl : MonoBehaviour {
 		float fY = aAmplitude * Mathf.Sin(bPeriod * fX) + dVerticalShift;
 
 		return fY;
+	}
+
+	/*
+	 * @brief		Initiliazes the values for the platform 
+	 */
+	public void SetupPlatform(float fAmplitude, float fPeriod) {
+
+		aAmplitude = fAmplitude;
+		bPeriod = fPeriod;
 	}
 }
