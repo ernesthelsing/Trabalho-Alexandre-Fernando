@@ -9,6 +9,9 @@ public class LevelControl : MonoBehaviour {
 	// Points to itself
 	public static LevelControl Script;
 
+	public float TimeCounter = 0.0f;
+	public float LevelTimer = 100;	// Level time in seconds. Must be between 120 and 300 seconds;
+
 	public GameObject player;
 	static public bool gameStarted = false;
 	//menu variables//
@@ -29,6 +32,9 @@ public class LevelControl : MonoBehaviour {
 	private TimeSpan tsLevelTimer;
 	private float fNetTimer;
 	
+	// Fernando //
+	private ScoreCounter scoreScript;
+	// End Fernando //
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
@@ -38,12 +44,24 @@ public class LevelControl : MonoBehaviour {
 	void Awake(){
 		
 		Script = this;
+		
+		// Fernando //
+		scoreScript = GameObject.Find("GameCode").GetComponent<ScoreCounter>();
+		// End Fernando //
 
 		menuTime = Time.time;
 	}
 
 	// Use this for initialization
 	void Start () {
+		
+		// From InGamePlay
+		// DEBUG
+		Debug.Log("Spawning player.");
+		// FIXME:
+		NetworkGame.Script.InitializeSpawnPoint();
+		NetworkGame.Script.SpawnPlayers();
+		// End - InGamePlay
 		
 		showMenu = true;
 		if(player != null) {
@@ -57,6 +75,18 @@ public class LevelControl : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+		/* From InGamePlay */
+
+		// This is the main timer, which is synchronized through network to all clients
+		if(Network.isServer) {
+
+			// Updates the network timer
+			TimeCounter += Time.deltaTime;
+		}
+		/* End - InGamePlay */
+		
+
 		
 	}
 
@@ -84,11 +114,14 @@ public class LevelControl : MonoBehaviour {
 
 		// Show the level timer
 		tsLevelTimer = TimeSpan.FromSeconds(levelTimer - fNetTimer);
+		
+		if(levelTimer < 0.0f) Debug.Log("Time's Up");
+				
 		stLevelTimer = string.Format("{0:D2}:{1:D2}", tsLevelTimer.Minutes, tsLevelTimer.Seconds);
 		GUILayout.Label("Time: " + stLevelTimer );
 
 		// DEBUG
-		fNetTimer = InGamePlay.Script.GetTimeCounter();
+		fNetTimer = GetTimeCounter();
 		GUILayout.Label("NetTimer: " + fNetTimer);
 		
 		// FIXME
@@ -171,6 +204,8 @@ public class LevelControl : MonoBehaviour {
 	
 	void OnTriggerEnter(Collider other){
 		
+		Debug.Log("This guy got to the end " + other.gameObject.name);
+		
 		//if(other.gameObject.name.Equals("First Person Controller"))
 		if(other.gameObject.tag.Equals("Player")) {
 
@@ -200,11 +235,18 @@ public class LevelControl : MonoBehaviour {
 
 			audio.PlayOneShot(EndReachedSound);
 		}
-
+		
+		// Fernando //
+		if(Network.isServer)
+			scoreScript.ScoreUpdate(goPlayer.networkView.owner);
+		else
+			networkView.RPC("Score",RPCMode.Server,goPlayer.networkView.owner);
+		// End Fernando //
+		
 		// Moves the player back to the respawn point
 		Vector3 start = goPlayer.GetComponent<PlayerControl>().StartingPosition;
 		goPlayer.transform.position = start;
-
+		
 
 
 		//	endOfGame = true;
@@ -214,5 +256,41 @@ public class LevelControl : MonoBehaviour {
 			//Toggle();
 			Debug.Log("Player got to end");
 	}
+	
+	// Fernando //
+	[RPC]
+	void Score(NetworkPlayer player){
+		
+		scoreScript.ScoreUpdate(player);
+		
+	}// End Fernando //
 
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * NETWORK STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
+	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
+
+		float temp = 0.0f;
+
+		if(stream.isWriting) {
+
+			// Updates the timer through the network
+			temp = TimeCounter;
+			stream.Serialize(ref temp);
+		}
+		else {
+
+			// Gets the timer from the network and updates here, in the client
+			stream.Serialize(ref temp);
+			TimeCounter = temp;
+		}
+	}
+
+	public float GetTimeCounter() {
+
+		return TimeCounter;
+	}
 }

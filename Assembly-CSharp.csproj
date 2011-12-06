@@ -44,11 +44,11 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Fernando\Scripts\ScoreCounter.cs" />
      <Compile Include="Assets\Scripts\BulletControl.cs" />
      <Compile Include="Assets\Scripts\CannonControl.cs" />
      <Compile Include="Assets\Scripts\DeathZone.cs" />
      <Compile Include="Assets\Scripts\InGameChat.cs" />
-     <Compile Include="Assets\Scripts\InGamePlay.cs" />
      <Compile Include="Assets\Scripts\LevelControl.cs" />
      <Compile Include="Assets\Scripts\LobbyChat.cs" />
      <Compile Include="Assets\Scripts\LobbyPlayerSetup.cs" />

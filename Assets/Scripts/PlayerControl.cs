@@ -6,6 +6,8 @@ public class PlayerControl: MonoBehaviour {
 	// PRIVATE
 	private Vector3 startingPosition;
 	
+	private GameObject goHit;
+	
 	// PUBLIC
 	// Points to itself
 	public static PlayerControl Script;
@@ -35,6 +37,8 @@ public class PlayerControl: MonoBehaviour {
 				audio.PlayOneShot(jump);
 			
 		}
+		
+		//RaycastingHighlight();
 	}
 	
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -84,4 +88,16 @@ public class PlayerControl: MonoBehaviour {
 		// DEBUG
 		Debug.Log("Moving back..." + transform.position + "/"+ startingPosition);
 	}
+	
+	//Fernando//
+	public void RaycastingHighlight(){
+		
+		RaycastHit hit;
+		
+		if(Physics.Raycast(transform.position + new Vector3(0,5,0),transform.forward,out hit,15.0f)){
+			hit.collider.gameObject.renderer.material.color = Color.green;
+		}
+		
+	}
+	//End Fernando//
 }

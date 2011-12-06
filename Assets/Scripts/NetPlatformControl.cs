@@ -48,7 +48,7 @@ public class NetPlatformControl : MonoBehaviour {
 	// Using fixed update, so the player on the platform doesn't jitter 
 	void FixedUpdate () {
 
-		v3Movement.y = MovePlatform(InGamePlay.Script.GetTimeCounter());
+		v3Movement.y = MovePlatform(LevelControl.Script.GetTimeCounter());
 		v3Movement.x = transform.position.x;
 		v3Movement.z = transform.position.z;
 
