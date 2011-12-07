@@ -38,8 +38,7 @@ public class BulletControl : MonoBehaviour {
 		{
 			Vector3 start = collided.gameObject.GetComponent<PlayerControl>().StartingPosition;
 			collided.gameObject.transform.position = start;
-			// FIXME @REDES@
-			// No lives anymore. Instead, trow the player back to the starting line or something
+			// FIXME: there no more lives. The player should restart the level
 			//collided.gameObject.GetComponent<PlayerControl>().lives -= 1;
 			Debug.Log("Hit Player died");
 		}

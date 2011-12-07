@@ -10,6 +10,8 @@ public class CannonControl : MonoBehaviour {
 	//public GameObject player;
 	
 	public AudioClip blast;
+	public int minShootTime = 5;
+	public int maxShootTime = 15;
 	
 	private GameObject bulletClone;
 	
@@ -22,7 +24,7 @@ public class CannonControl : MonoBehaviour {
 	void Start () {
 		
 		offsetVec = new Vector3(0,2,-2);
-		shootTime = Random.Range(5,15);
+		shootTime = Random.Range(minShootTime,maxShootTime);
 		timeTaken = 0.0f;
 		
 	}
@@ -40,7 +42,7 @@ public class CannonControl : MonoBehaviour {
 			//yield return new WaitForSeconds(animation.GetClip("Take 001").length);
 			StartCoroutine(Shoot(animation.GetClip("Take 001").length));
 			timeTaken = 0.0f;
-			shootTime = Random.Range(5,15);
+			shootTime = Random.Range(minShootTime, maxShootTime);
 		}
 		
 		StopCoroutine("Shoot");

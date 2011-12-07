@@ -21,11 +21,13 @@ public class LevelControl : MonoBehaviour {
 	public AudioClip EndReachedSound;
 	public float levelTimer = 120; // Time of a level game, in seconds. Must be within 120 and 300.
 	
-	public GameObject[] allPlatforms = null; // All platforms from the leve
+	public GameObject[] allPlatforms = null; // All platforms from the level
 	public float platformMinAmplitude = 1.0f;
 	public float platformMaxAmplitude = 10.0f;
-	public float platformMinPeriod = 0.2f;
-	public float platformMaxPeriod = 4.0f;
+	public float platformMinPeriod = 2.0f;
+	public float platformMaxPeriod = 3.0f;
+
+	public GameObject[] allCannons = null; // All canons in the game
 
 	// PRIVATE
 	private bool endOfGame = false;
@@ -79,6 +81,8 @@ public class LevelControl : MonoBehaviour {
 		allPlatforms = GameObject.FindGameObjectsWithTag("Platform");
 
 		GatherAllPlatformInfo();	
+
+		GatherAllCannonsInfo();
 	}
 	
 	// Update is called once per frame
@@ -343,4 +347,23 @@ public class LevelControl : MonoBehaviour {
 
 		thisPlatform.GetComponent<NetPlatformControl>().SetupPlatform(aAmplitude, bPeriod);
 	}
+
+	/*
+	 * @brief		Gather all cannon game objects in an array. Executed in the server and in clients also
+	 * @param		void
+	 * @return	void
+	 */ 
+	public void GatherAllCannonsInfo() {
+
+		// Populate the the cannon array for all instances (server and clients)
+		allCannons = GameObject.FindGameObjectsWithTag("Cannon");
+
+		for(int nIdx = 0; nIdx < allCannons.Length; nIdx++) {
+
+			// Sets the unique index number for all cannons in all instances
+			GameObject thisCannon = allCannons[nIdx];
+			thisCannon.GetComponent<NetCannonControl>().SetMyIndex(nIdx);
+		}
+	}
+
 }
