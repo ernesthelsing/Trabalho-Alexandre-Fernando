@@ -9,6 +9,8 @@ public class InGameChat : MonoBehaviour {
 	 * Pressing 'esc' should cancel the chat and allow the player to play again.
 	 */
 	private bool showChat = false;
+	private bool showExitWindow = false;
+
 	public float waitForFocusTime = 0.5f;
 	private float waitFocusDelay;
 	private Rect window;
@@ -68,6 +70,42 @@ public class InGameChat : MonoBehaviour {
 
 		Event e = Event.current;
 		
+		/* Check if the player pressed Escape during the game, but with the chat window closed.
+		 * In this case, assume he wants to exit the current game and go back to the main menu.
+		 */
+		if(e.keyCode == KeyCode.Escape && !showChat && !showExitWindow) {
+
+			// DEBUG
+			Debug.Log("ESC Pressed, no chat!");
+
+			LevelControl.Script.SetMotionStatus(false);
+
+				// DEBUG
+				Debug.Log("Enabling exit window");
+
+				//showExitWindow = true;
+
+
+				GUILayout.BeginArea(new Rect(200,200,200,200));
+				{
+					// Player pressed ESC during the game, wants to disconnect?
+					if(GUILayout.Button("Exit this game")) {
+
+						// Disconnects from the game and go back to the main menu
+					}
+					else if(GUILayout.Button("Back to the game"))	{
+
+						// Forget it! Back to the game!
+						showExitWindow = false;
+						LevelControl.Script.SetMotionStatus(true);
+
+						// DEBUG
+						Debug.Log("Disabling exit window");
+					}
+				}
+				GUILayout.EndArea();
+		}
+
 		if(e.keyCode == KeyCode.T && !showChat) {
 			
 			typingChat = true;
@@ -198,7 +236,10 @@ public class InGameChat : MonoBehaviour {
 			// Pressing ESC at anytime should dismiss the chat window
 			Debug.Log("ESC pressed");
 
-			CloseChatWindow();
+			if(showChat) {
+
+				CloseChatWindow();
+			}
 		}
 
 		if(typingChat) {

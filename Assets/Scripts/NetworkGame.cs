@@ -9,12 +9,12 @@ public class NetworkGame : MonoBehaviour {
 	public string serverName = "MyGameServer";
 	public string gameTypeOnMasterServer = "MyGameType";
 	
-	public int networkMaxPlayers = 4;
+	public int networkMaxPlayers = 3;
 	public string connectToIP = "127.0.0.1";
 	public int networkConnectPort = 25001;
 
-	// 'Gambitech' to user or not the master server	
-	private bool useMasterServer = false;
+	// 'Gambitech' to use or not the master server	
+	private bool useMasterServer = true;
 	public bool UseMasterServer {
 		get { return useMasterServer; }
 		set { useMasterServer = value; }
@@ -38,7 +38,6 @@ public class NetworkGame : MonoBehaviour {
 
 	public GameObject serverSpawnPoint;
 
-	//private Vector3 v3SpawnPosition = new Vector3(-21, 0, -5);
 	private Vector3 v3SpawnPosition = Vector3.zero;
 
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -215,14 +214,10 @@ public class NetworkGame : MonoBehaviour {
 
 			Network.Instantiate(serverPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
 
-			// Adds to the LevelControl script
-			LevelControl.Script.SetPlayerGameObject(serverPlayerAvatar);
 		}
 		else {
 
 			Network.Instantiate(clientPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
-			// Adds to the LevelControl script
-			LevelControl.Script.SetPlayerGameObject(clientPlayerAvatar);
 		}
 	}
 

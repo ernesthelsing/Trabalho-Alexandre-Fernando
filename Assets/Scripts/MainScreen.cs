@@ -11,13 +11,22 @@ public class MainScreen : MonoBehaviour {
 	private GUIMethod currentMenu;
 	float screenX;
 	float screenY;
-	public float menuHeight = 450;
-	public float menuWidth = 300;
-	public float subMenuWidth = 300;
-	public float subMenuHeight = 300;
+	public float menuHeight = 100;
+	public float menuWidth = 400;
+	public float subMenuWidth = 400;
+	public float subMenuHeight = 400;
+	public float subMenuOffsetY = 200;
+
+	public float joinMenuWidth = 500;
+	public float joinMenuHeight = 150;
+
 	Rect subMenuWindow = new Rect();
 	public float windowOffsetX = 20;
 	public float windowOffsetY = 10;
+
+	public int maxInputLength = 20;
+
+	public GUISkin skin;
 
 	// Background variables
 	public int guiDepth = 0;
@@ -59,12 +68,13 @@ public class MainScreen : MonoBehaviour {
 		
 		// Menu stuff
 		screenX = Screen.width * 0.5f - menuWidth * 0.5f;
-		screenY = Screen.height * 0.5f - menuHeight * 0.5f;
+		screenY = 200;
+		//screenY = Screen.height * 0.5f - menuHeight * 0.5f;
 		currentMenu = MainMenu;
 	
 		// Host game window stuff	
 		subMenuWindow.x = Screen.width * 0.5f - subMenuWidth * 0.5f;
-		subMenuWindow.y = Screen.height * 0.5f - subMenuHeight * 0.5f;
+		subMenuWindow.y = (Screen.height * 0.5f - subMenuHeight * 0.5f) + subMenuOffsetY;
 		
 		subMenuWindow.width = subMenuWidth;
 		subMenuWindow.height = 150;
@@ -88,6 +98,8 @@ public class MainScreen : MonoBehaviour {
 	void OnGUI ()
 	{
 		
+		GUI.skin = skin;
+
 		// Draws the background texture
 		GUI.DrawTexture (mainScreenBGPos, mainScreenBG);
 		
@@ -110,10 +122,7 @@ public class MainScreen : MonoBehaviour {
 		
 		GUILayout.BeginArea (new Rect (screenX, screenY, menuWidth, menuHeight));
 		
-		if (GUILayout.Button ("Start local game")) {
-			
-			
-		} else if (GUILayout.Button ("Host network game")) {
+		if (GUILayout.Button ("Host network game")) {
 			
 			currentMenu = HostGameMenu;
 		} else if (GUILayout.Button ("Join network game")) {
@@ -162,7 +171,8 @@ public class MainScreen : MonoBehaviour {
 			{
 				GUILayout.Space (10);
 				GUILayout.Label ("Server name");
-				serverName = GUILayout.TextField(serverName, GUILayout.MinWidth (100));
+				serverName = 
+					GUILayout.TextField(serverName, maxInputLength, GUILayout.MinWidth (200), GUILayout.MaxWidth(200));
 			}
 			GUILayout.EndHorizontal ();
 
@@ -170,7 +180,8 @@ public class MainScreen : MonoBehaviour {
 			{
 				GUILayout.Space (10);
 				GUILayout.Label ("Player name");
-				playerName = GUILayout.TextField(playerName, GUILayout.MinWidth (100));
+				playerName = 
+					GUILayout.TextField(playerName, maxInputLength, GUILayout.MinWidth (200), GUILayout.MaxWidth(200));
 			}
 			GUILayout.EndHorizontal ();
 			
@@ -203,11 +214,11 @@ public class MainScreen : MonoBehaviour {
 	 */
 	void JoinGameMenu()	{
 		
-		subMenuWindow.x = Screen.width * 0.5f - subMenuWidth * 0.5f;
-		subMenuWindow.y = Screen.height * 0.5f - subMenuHeight * 0.5f;
+		subMenuWindow.x = Screen.width * 0.5f - joinMenuWidth * 0.5f;
+		subMenuWindow.y = (Screen.height * 0.5f - joinMenuHeight * 0.5f);
 		
-		subMenuWindow.width = subMenuWidth;
-		subMenuWindow.height = 150;
+		subMenuWindow.width = joinMenuWidth;
+		subMenuWindow.height = joinMenuHeight;
 		
 		GUILayout.BeginArea (new Rect (subMenuWindow.x, subMenuWindow.y, subMenuWindow.width, subMenuWindow.height));
 		{
@@ -227,7 +238,8 @@ public class MainScreen : MonoBehaviour {
 		
 		{
 			GUILayout.Label ("Player name");
-			playerName = GUILayout.TextField(playerName, GUILayout.MinWidth (100));
+			playerName = 
+				GUILayout.TextField(playerName, 20, GUILayout.MinWidth(200), GUILayout.MaxWidth(200));
 			GUILayout.Space (10);
 		}
 
@@ -293,8 +305,8 @@ public class MainScreen : MonoBehaviour {
 
 		if(Network.isServer) {
 
-			float buttonHeight = 20;
-			float buttonWidth = 80;
+			float buttonHeight = 25;
+			float buttonWidth = 200;
 
 			if(GUI.Button(new Rect(Screen.width * 0.5f - buttonWidth * 0.5f,
 							Screen.height - buttonHeight*2, buttonWidth, buttonHeight), "Start game")) {

@@ -28,6 +28,8 @@ public class ScoreCounter : MonoBehaviour {
 	}
 	
 	public List<PlayerScore> playersScores;
+
+	public bool showScoreBoard = false;
 	
 	void Awake() {
 		
@@ -100,9 +102,10 @@ public class ScoreCounter : MonoBehaviour {
 	
 	void OnGUI(){
 		
-		ScoreBoard();
+		if(showScoreBoard) {
 		
-		
+			ScoreBoard();
+		}
 	}
 	
 	//Builds the scoreboard needs polish

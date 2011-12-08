@@ -55,7 +55,7 @@ public class NetCannonControl : MonoBehaviour {
 				networkView.RPC("DoTheShootStuff", RPCMode.All, myOwnIndex);
 			}
 
-				networkView.RPC("StopTheShootStuff", RPCMode.All, myOwnIndex);
+			networkView.RPC("StopTheShootStuff", RPCMode.All, myOwnIndex);
 		}
 	
 	}

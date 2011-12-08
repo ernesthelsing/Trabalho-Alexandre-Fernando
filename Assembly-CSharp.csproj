@@ -57,7 +57,6 @@
      <Compile Include="Assets\Scripts\NetPlatformControl.cs" />
      <Compile Include="Assets\Scripts\NetworkCharacterControl.cs" />
      <Compile Include="Assets\Scripts\NetworkGame.cs" />
-     <Compile Include="Assets\Scripts\PlatformControl.cs" />
      <Compile Include="Assets\Scripts\PlatformCrumble.cs" />
      <Compile Include="Assets\Scripts\PlayerControl.cs" />
      <Compile Include="Assets\Scripts\SplashScreen.cs" />

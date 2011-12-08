@@ -10,31 +10,33 @@ public class LevelControl : MonoBehaviour {
 	public static LevelControl Script;
 
 	public float TimeCounter = 0.0f;
-	public float LevelTimer = 100;	// Level time in seconds. Must be between 120 and 300 seconds;
 
 	public GameObject player;
-	static public bool gameStarted = false;
 	//menu variables//
 	public GUISkin skin;
 	public float width;
 	public float height;
 	public AudioClip EndReachedSound;
-	public float levelTimer = 120; // Time of a level game, in seconds. Must be within 120 and 300.
+	public float levelTimer = 20; // Time of a level game, in seconds. Must be within 120 and 300.
 	
 	public GameObject[] allPlatforms = null; // All platforms from the level
 	public float platformMinAmplitude = 1.0f;
 	public float platformMaxAmplitude = 10.0f;
 	public float platformMinPeriod = 2.0f;
 	public float platformMaxPeriod = 3.0f;
-
 	public GameObject[] allCannons = null; // All canons in the game
 
+	public bool GameStarted {
+		get { return gameStarted; }
+		set { gameStarted = value; }
+	}
+
 	// PRIVATE
+	private PlayerControl playerControl = null;
 	private bool endOfGame = false;
 	private float endTime = 0.0f;
 	private float menuTime = 0.0f;
 	private string playerTimeString;
-	private PlayerControl playerControl;
 	private bool showMenu;
 	private string stLevelTimer;
 	private TimeSpan tsLevelTimer;
@@ -43,6 +45,8 @@ public class LevelControl : MonoBehaviour {
 	// Fernando //
 	private ScoreCounter scoreScript;
 	// End Fernando //
+
+	private bool gameStarted = false;
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
@@ -63,19 +67,9 @@ public class LevelControl : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		
-		// From InGamePlay
-		// DEBUG
-		Debug.Log("Spawning player.");
 		// FIXME:
 		NetworkGame.Script.InitializeSpawnPoint();
 		NetworkGame.Script.SpawnPlayers();
-		// End - InGamePlay
-		
-		showMenu = true;
-		if(player != null) {
-
-			playerControl = player.GetComponent<PlayerControl>();
-		}
 		
 		// Array for the plaforms
 		allPlatforms = GameObject.FindGameObjectsWithTag("Platform");
@@ -88,7 +82,13 @@ public class LevelControl : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		/* From InGamePlay */
+		if(!gameStarted) {
+
+			if(playerControl != null) {
+
+					playerControl.SetMotionStatus(false);
+			}
+		}
 
 		// This is the main game timer, which is synchronized through network to all clients
 		if(Network.isServer) {
@@ -96,10 +96,6 @@ public class LevelControl : MonoBehaviour {
 			// Updates the network timer
 			TimeCounter += Time.deltaTime;
 		}
-		/* End - InGamePlay */
-		
-
-		
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -122,7 +118,6 @@ public class LevelControl : MonoBehaviour {
 		// Set up the skin preferences
 		GUI.skin = skin;
 
-
 		// Show the level timer
 		tsLevelTimer = TimeSpan.FromSeconds(levelTimer - fNetTimer);
 		
@@ -133,20 +128,22 @@ public class LevelControl : MonoBehaviour {
 
 		// DEBUG
 		fNetTimer = GetTimeCounter();
-		GUILayout.Label("NetTimer: " + fNetTimer);
 		
-		// FIXME
-		//if(!showMenu) return;
-		
-		playerControl.SetMotionStatus(false);
-		
+		// Game not started yet?
+		if(!gameStarted) {
+
+			MainMenu();
+			return;
+		}
+
+		// TODO: clean this mess!
+		/*
 		float screenX = Screen.width * 0.5f - width * 0.5f;
 		float screenY = Screen.height * 0.5f - height * 0.5f;
 		
+
 		GUILayout.BeginArea(new Rect(screenX,screenY,width,height) );
 		
-		// FIXME
-
 		if(endOfGame)
 		{
 			
@@ -168,7 +165,8 @@ public class LevelControl : MonoBehaviour {
 		}
 		
 		GUILayout.EndArea();
-		
+		*/
+
 		//GUILayout.Label("Time Startup: " + Time.realtimeSinceStartup);
 		//GUILayout.Label("Time DeltaTime: " + Time.deltaTime);
 		//GUILayout.Label("Frame Count: " + Time.frameCount);
@@ -187,13 +185,21 @@ public class LevelControl : MonoBehaviour {
 	 */
 	void MainMenu(){
 		
-//		if(GUILayout.Button("Start"))	{
+		if(Network.isServer) {
 
-			menuTime = Time.time - menuTime;
-			Toggle();
-			playerControl.SetMotionStatus(true);	
-			gameStarted = true;
-	//	}
+			if(GUILayout.Button("Start"))	{
+
+				//menuTime = Time.time - menuTime;
+				// FIXME: all this must be done through RPC!
+				//GameStarted = true;
+				//playerControl.SetMotionStatus(true);	
+				networkView.RPC("GameStarting", RPCMode.All);
+			}
+		}
+		else {
+
+			GUILayout.Label("Waiting for server start the game.");
+		}
 	}
 	
 	void DeathMenu(){
@@ -231,6 +237,9 @@ public class LevelControl : MonoBehaviour {
 
 			player = goPlayer;
 			playerControl = player.GetComponent<PlayerControl>();
+
+			// DEBUG
+			Debug.Log("[LevelControl]SetPlayerGameObject: " + goPlayer);
 		}
 	}
 
@@ -276,6 +285,19 @@ public class LevelControl : MonoBehaviour {
 		
 	}// End Fernando //
 
+	/*
+	 * @brief		A shortcut to change the player motion from another script
+	 * @param		bnStatus	False to disable the player control
+	 * @return	void
+	 */
+	public void SetMotionStatus(bool bnStatus) {
+
+		// DEBUG
+		Debug.Log("[LevelControl] Changing SetMotionStatus to:" + bnStatus);
+
+		playerControl.SetMotionStatus(bnStatus);
+	}
+
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * NETWORK STUFF
@@ -308,6 +330,18 @@ public class LevelControl : MonoBehaviour {
 	public float GetTimeCounter() {
 
 		return TimeCounter;
+	}
+
+	/*
+	 * @brief		Signal to all clients that the game has started
+	 * @param		void
+	 * @return	void
+	 */
+	[RPC]
+	void GameStarting() {
+
+		GameStarted = true;
+		playerControl.SetMotionStatus(true);	
 	}
 
 	/*

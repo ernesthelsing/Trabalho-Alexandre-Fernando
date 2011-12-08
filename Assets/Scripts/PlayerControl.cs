@@ -13,6 +13,12 @@ public class PlayerControl: MonoBehaviour {
 	public static PlayerControl Script;
 	public AudioClip jump;
 
+	private bool playerMotionStatus = false;
+	public bool PlayerMotionStatus {
+		get { return playerMotionStatus; }
+		set { playerMotionStatus = value; }
+	}
+
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
@@ -33,7 +39,7 @@ public class PlayerControl: MonoBehaviour {
 		
 		if(Input.GetKeyDown("space"))
 		{
-			if(LevelControl.gameStarted)
+			if(LevelControl.Script.GameStarted)
 				audio.PlayOneShot(jump);
 			
 		}
@@ -54,12 +60,16 @@ public class PlayerControl: MonoBehaviour {
 	 */
 	public void SetMotionStatus(bool status){
 		
-		GetComponent<FPSInputController>().enabled = status;
-		GetComponent<MouseLook>().enabled = status;
-		GetComponent<CharacterMotor>().canControl = status;
+		this.GetComponent<FPSInputController>().enabled = status;
+		this.GetComponent<MouseLook>().enabled = status;
+		this.GetComponent<CharacterMotor>().canControl = status;
 		//GetComponent<CharacterController>().enabled = status;
 		Camera.mainCamera.GetComponent<MouseLook>().enabled = status;
-		
+
+		playerMotionStatus = status;
+
+		// DEBUG
+		Debug.Log("[PlayerControl]SetMotionStatus: " + status);
 	}
 	
 		
