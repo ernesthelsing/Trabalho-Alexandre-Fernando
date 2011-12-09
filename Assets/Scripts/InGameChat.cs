@@ -126,6 +126,36 @@ public class InGameChat : MonoBehaviour {
 	 * CLIENT STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+	// From LobbyChat:
+
+	/*	
+	 * @brief		Handles when some player disconnects from the server. Tell everyone about it, and remove the
+	 * 					player from the player list
+	 * @param		NetworkPlayer player	The player data structure on the network
+	 * @return	void
+	 */
+	void OnPlayerDisconnected(NetworkPlayer player) {
+
+		string stDisconnectMsg;
+		NetworkGame.PlayerInfo playerDisconnected = NetworkGame.Script.GetPlayerInfoFromNetwork(player);
+
+		if(playerDisconnected == null) {
+
+			// DEBUG
+			Debug.LogError("Error on removing a disconnected player from the list. " + player);
+			return;
+		}
+
+		// DEBUG
+		Debug.Log("[InGameChat]IOnPlayerDisconnected " + playerDisconnected.playerName);
+
+		stDisconnectMsg = playerDisconnected.playerName + "disconnected from server.";
+		// Send a message to all
+		networkView.RPC("ApplyInGameChatText", RPCMode.All, playerDisconnected.playerName, stDisconnectMsg);
+		
+		// Removes the player from the list of connected players
+		NetworkGame.Script.RemovePlayerFromPlayerList(player);
+	}
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -226,6 +256,8 @@ public class InGameChat : MonoBehaviour {
 		stMsg = stMsg.Replace ("\n", "");
 		
 		networkView.RPC("ApplyInGameChatText", RPCMode.All, playerName, stMsg);
+
+		// DEBUG
 		Debug.Log("RPC sent to all");
 
 		inputField = ""; // Clear input line
@@ -265,6 +297,6 @@ public class InGameChat : MonoBehaviour {
 
 			showChat = true;
 		}
-
 	}
+
 }

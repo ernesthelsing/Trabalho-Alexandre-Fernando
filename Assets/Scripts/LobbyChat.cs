@@ -124,16 +124,11 @@ public class LobbyChat : MonoBehaviour
 	 */
 	void OnPlayerDisconnected(NetworkPlayer player) {
 
-		addGameChatMessage("Player disconnected from "+ player.ipAddress);
+		// Send a message to all
+		addGameChatMessage("Player disconnected from " + player.ipAddress);
 
-		// Remove player from the list
-		foreach(NetworkGame.PlayerInfo entry in NetworkGame.playerList) {
-
-			if(entry.networkPlayer == player) {
-				NetworkGame.playerList.Remove(entry);
-				break;
-			}
-		}
+		// Removes the player from the list of connected players
+		NetworkGame.Script.RemovePlayerFromPlayerList(player);
 	}
 
 	/*
@@ -160,7 +155,7 @@ public class LobbyChat : MonoBehaviour
 		newEntry.networkPlayer = info.sender;
 		NetworkGame.playerList.Add(newEntry);
 
-		addGameChatMessage(stName + " joined the game");
+		addGameChatMessage(stName + " joined the game.");
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */

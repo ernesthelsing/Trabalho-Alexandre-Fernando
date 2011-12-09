@@ -14,7 +14,7 @@ public class NetworkGame : MonoBehaviour {
 	public int networkConnectPort = 25001;
 
 	// 'Gambitech' to use or not the master server	
-	private bool useMasterServer = true;
+	private bool useMasterServer = false;
 	public bool UseMasterServer {
 		get { return useMasterServer; }
 		set { useMasterServer = value; }
@@ -52,7 +52,6 @@ public class NetworkGame : MonoBehaviour {
 		//http://unity3d.com/support/documentation/Components/net-NetworkLevelLoad.html
 		DontDestroyOnLoad(this);
 		networkView.group = 1;
-
 	}
 	
 	// Use this for initialization
@@ -200,6 +199,45 @@ public class NetworkGame : MonoBehaviour {
 
 			Network.Connect(connectToIP, networkConnectPort);	
 		}
+	}
+
+	/*
+	 * @brief		Removes a player from the player list
+	 * @param		player	A NetworkPlayer to be removed
+	 * @return	void
+	 */
+	public void RemovePlayerFromPlayerList(NetworkPlayer player) {
+
+		// DEBUG
+		Debug.Log("[NetworkGame]RemovePlayerFromPlayerList " + player);
+
+		// Remove player from the list
+		foreach(NetworkGame.PlayerInfo entry in NetworkGame.playerList) {
+
+			if(entry.networkPlayer == player) {
+
+				playerList.Remove(entry);
+				break;
+			}
+		}
+	}
+
+	/*
+	 * @brief		Finds and returns the PlayerInfo entry from a networkPlayer
+	 * @param		networkPlayer	A NetworkPlayer to search in the PlayerList
+	 * @return	A PlayerInfo entry, if found, or null if not
+	 */
+	public PlayerInfo GetPlayerInfoFromNetwork(NetworkPlayer networkPlayer) {
+
+		foreach(PlayerInfo entry in playerList) {
+
+			if(entry.networkPlayer == networkPlayer) {
+
+				return entry;
+			}
+		}
+
+		return null;
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */
