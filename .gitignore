@@ -2,6 +2,7 @@
 /Bin/
 *.cs~
 .DS_Store
+._*
 
 # Downloaded from:http://forum.unity3d.com/threads/69609-Source-Control-w-Free-Unity-ignore-files-(Git-SVN-CVS) 
 #UPDATE: I assumed it would work for SVN and CVS
