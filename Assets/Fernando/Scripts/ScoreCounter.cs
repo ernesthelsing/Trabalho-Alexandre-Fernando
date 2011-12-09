@@ -52,7 +52,7 @@ public class ScoreCounter : MonoBehaviour {
 		
 		//Debug.Log("This script exists");
 		//This populates the player list
-		/*if(!Network.isServer) return;
+		if(!Network.isServer) return;
 		
 		//This adds the server player
 		PlayerScore tempPlayer = new PlayerScore();
@@ -78,10 +78,10 @@ public class ScoreCounter : MonoBehaviour {
 		}
 		
 		foreach(PlayerScore ps in playersScores)
-			Debug.Log("This is player address in score list: " + ps.netPlayer.ipAddress + " this is his current score " + ps.score);*/
+			Debug.Log("This is player address in score list: " + ps.netPlayer.ipAddress + " this is his current score " + ps.score);
 		
 		//Creating fake players for testing purposes
-		for(int i = 0; i < 4; i++){
+		/*for(int i = 0; i < 4; i++){
 			
 			PlayerScore tempPlayer = new PlayerScore();
 			//tempPlayer.netPlayer = null;
@@ -90,10 +90,10 @@ public class ScoreCounter : MonoBehaviour {
 			
 			playersScores.Add(tempPlayer);
 					
-		}
+		}*/
 		
 		//Call when the match is done
-		SortScore();
+		//SortScore();
 		
 		//foreach(PlayerScore ps in playersScores)
 			//Debug.Log("This is player name in score list: " + ps.playerName + " this is his current score " + ps.score);
@@ -111,7 +111,7 @@ public class ScoreCounter : MonoBehaviour {
 	//Builds the scoreboard needs polish
 	void ScoreBoard(){
 		
-		GUILayout.BeginArea (new Rect (screenX, screenY, scoreMenuWidth, scoreMenuHeight));
+		GUILayout.BeginArea (new Rect (screenX, 100 + screenY, scoreMenuWidth, scoreMenuHeight));
 			
 			GUILayout.BeginVertical("box");
 				GUILayout.Label("Match is over",scoreTextStyle);
@@ -149,6 +149,18 @@ public class ScoreCounter : MonoBehaviour {
 	
 		playersScores.Sort(HighScore);
 		
+		
+	}
+	
+	public void UpdateScoreLists(NetworkPlayer player,string name, int score){
+		
+		PlayerScore tempPlayer = new PlayerScore();
+		
+		tempPlayer.netPlayer = player;
+		tempPlayer.playerName = name;
+		tempPlayer.score = score;
+		
+		playersScores.Add(tempPlayer);
 		
 	}
 	

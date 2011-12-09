@@ -131,6 +131,24 @@ public class NetworkGame : MonoBehaviour {
 
 		networkView.RPC("LaunchLevel", RPCMode.All, Application.loadedLevel+1);
 	}
+	
+	/*
+	 * @brief		Used in restarting the game
+	 * @param		void
+	 * @return	void
+	 */
+	public void HostLaunchGameTarget(int levelIdx) {
+
+		if(!Network.isServer)
+			return;
+
+		MasterServer.UnregisterHost();
+
+		Network.RemoveRPCsInGroup(0);
+		Network.RemoveRPCsInGroup(1);
+
+		networkView.RPC("LaunchLevel", RPCMode.All, levelIdx);
+	}
 
 	/*
 	 * @brief		RPC to everybody that the game is lauching
