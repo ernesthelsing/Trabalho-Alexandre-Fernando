@@ -41,6 +41,7 @@ public class LevelControl : MonoBehaviour {
 	private string stLevelTimer;
 	private TimeSpan tsLevelTimer;
 	private float fNetTimer;
+	private bool showExitButton = false;
 	
 	// Fernando //
 	private ScoreCounter scoreScript;
@@ -134,6 +135,39 @@ public class LevelControl : MonoBehaviour {
 
 			MainMenu();
 			return;
+		}
+
+		// Game rolling...
+		Event e = Event.current;
+
+		// If the player pressed F1, show an option to disconnect from the current game
+		if(e.keyCode == KeyCode.F1 && !showExitButton) {
+
+			// DEBUG
+			Debug.Log("ESC Pressed");
+
+			// DEBUG
+			Debug.Log("[LevelControl] Button on.");	
+
+			SetMotionStatus(false);
+			showExitButton = true;
+		}
+
+		if(showExitButton) {
+
+			if(GUILayout.Button("Exit Game")) {
+
+				// Disconnects from the game
+				Network.Disconnect(200);
+				// Go back to the main menu
+				Application.LoadLevel("main_screen");
+			}
+
+			if(GUILayout.Button("Back")) {
+
+				SetMotionStatus(true);
+				showExitButton = false;
+			}
 		}
 
 		// TODO: clean this mess!
