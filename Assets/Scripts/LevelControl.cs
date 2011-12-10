@@ -167,6 +167,9 @@ public class LevelControl : MonoBehaviour {
 		// Show the level timer
 		tsLevelTimer = TimeSpan.FromSeconds(levelTimer);
 		
+		if(startEndCount)
+			tsLevelTimer = TimeSpan.FromSeconds(endRestartTimer);
+		
 		stLevelTimer = string.Format("{0:D2}:{1:D2}", tsLevelTimer.Minutes, tsLevelTimer.Seconds);
 		GUILayout.Label("Time: " + stLevelTimer );
 
