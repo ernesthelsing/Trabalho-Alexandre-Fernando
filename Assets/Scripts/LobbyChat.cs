@@ -19,6 +19,7 @@ public class LobbyChat : MonoBehaviour
 	private int width = 300;
 	private int height = 320;
 	private string playerName = null;
+	private int playerAvatarIdx = 0;
 	private float lastUnfocus = 0;
 	private Rect window;
 
@@ -28,14 +29,22 @@ public class LobbyChat : MonoBehaviour
 	public class LobbyChatEntry {
 		public string name;
 		public string text;
+		public Color nameColor;
 	}
 	private List<LobbyChatEntry> chatEntries = new List<LobbyChatEntry>();
+
+	private Color stdTextColor;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+	void Start() {
+
+		// Saves the standard text color
+		stdTextColor = GUI.color;
+	}
 	void Awake() {
 
 		mainScreenScript = MainScreen.Script;
@@ -79,7 +88,7 @@ public class LobbyChat : MonoBehaviour
 	void OnConnectedToServer() {
 		
 		ShowChatWindow();
-		networkView.RPC("TellServerOurName", RPCMode.Server, playerName);
+		networkView.RPC("TellServerOurName", RPCMode.Server, playerName, playerAvatarIdx);
 	}
 
 	/*
@@ -111,6 +120,7 @@ public class LobbyChat : MonoBehaviour
 		NetworkGame.PlayerInfo newEntry = new NetworkGame.PlayerInfo();
 		newEntry.playerName = playerName;
 		newEntry.networkPlayer = Network.player;
+		newEntry.playerAvatarIdx = playerAvatarIdx;
 		NetworkGame.playerList.Add(newEntry);
 
 		addGameChatMessage(playerName + " joined the game.");
@@ -143,16 +153,18 @@ public class LobbyChat : MonoBehaviour
 
 	/*
 	 * @brief		RPC Announces the player to the server
-	 * @param		stName	Player name
-	 * @param		info		Unity's data structure
+	 * @param		stName			Player name
+	 * @param		nAvatarIdx	Index for the player's avatar in the avatars array (colors also)
+	 * @param		info				Unity's data structure
 	 * @return	void
 	 */
 	[RPC]
-	void TellServerOurName(string stName, NetworkMessageInfo info) {
+	void TellServerOurName(string stName, int nAvatarIdx, NetworkMessageInfo info) {
 		
 		NetworkGame.PlayerInfo newEntry = new NetworkGame.PlayerInfo();
 		newEntry.playerName = stName;
 		newEntry.networkPlayer = info.sender;
+		newEntry.playerAvatarIdx = nAvatarIdx;
 		NetworkGame.playerList.Add(newEntry);
 
 		addGameChatMessage(stName + " joined the game.");
@@ -183,12 +195,15 @@ public class LobbyChat : MonoBehaviour
 	 */
 	void ShowChatWindow() {
 
+		// Get data from the main screen: player's name, player color.
 		playerName = MainScreen.playerName;
 
 		if(playerName == null || playerName == "") {
 
 			playerName = "RandomName" + Random.Range(1,999);
 		}
+
+		playerAvatarIdx = MainScreen.playerAvatarIdx;
 
 		showChat = true;
 		inputField = "";
@@ -220,7 +235,9 @@ public class LobbyChat : MonoBehaviour
 				else {
 
 					// TODO: add different colors for different names
+					GUI.color = entry.nameColor;
 					GUILayout.Label(entry.name + ": " + entry.text);
+					GUI.color = stdTextColor;
 				}
 
 				GUILayout.EndHorizontal();
@@ -260,6 +277,7 @@ public class LobbyChat : MonoBehaviour
 		
 		stMsg = stMsg.Replace ("\n", "");
 		networkView.RPC("ApplyGlobalChatText", RPCMode.All, playerName, stMsg);
+
 		inputField = ""; // Clear input line
 		GUI.UnfocusWindow(); // Deselect chat window
 		lastUnfocus = Time.time;
@@ -273,7 +291,7 @@ public class LobbyChat : MonoBehaviour
 	 */
 	private void addGameChatMessage(string stMsg) {
 		
-		ApplyGlobalChatText("" ,stMsg);
+		ApplyGlobalChatText("" , stMsg);
 		
 		if(Network.connections.Length > 0) {
 

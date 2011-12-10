@@ -13,10 +13,13 @@ public class MainScreen : MonoBehaviour {
 	float screenY;
 	public float menuHeight = 100;
 	public float menuWidth = 400;
-	public float subMenuWidth = 400;
-	public float subMenuHeight = 400;
-	public float subMenuOffsetY = 200;
 
+	// Host Menu Stuff
+	public float hostMenuWidth = 600;
+	public float hostMenuHeight = 300;
+	public float hostMenuOffsetY = 50;
+
+	// Join Menu Stuff
 	public float joinMenuWidth = 500;
 	public float joinMenuHeight = 150;
 
@@ -27,6 +30,14 @@ public class MainScreen : MonoBehaviour {
 	public int maxInputLength = 20;
 
 	public GUISkin skin;
+
+	// Player models/colors selection
+	public static int playerUniqueAvatarsNumber = 4;
+	// playerAvatarIcons and playerAvatarColors must match
+	public Texture2D[] playerAvatarIcons = new Texture2D[playerUniqueAvatarsNumber];
+	private Color[] playerAvatarColors = 
+		new Color[] { Color.red, Color.green, Color.blue, Color.yellow};
+	public static int playerAvatarIdx = 0;
 
 	// Background variables
 	public int guiDepth = 0;
@@ -73,11 +84,11 @@ public class MainScreen : MonoBehaviour {
 		currentMenu = MainMenu;
 	
 		// Host game window stuff	
-		subMenuWindow.x = Screen.width * 0.5f - subMenuWidth * 0.5f;
-		subMenuWindow.y = (Screen.height * 0.5f - subMenuHeight * 0.5f) + subMenuOffsetY;
+		subMenuWindow.x = Screen.width * 0.5f - hostMenuWidth * 0.5f;
+		subMenuWindow.y = (Screen.height * 0.5f - hostMenuHeight * 0.5f) + hostMenuOffsetY;
 		
-		subMenuWindow.width = subMenuWidth;
-		subMenuWindow.height = 150;
+		subMenuWindow.width = hostMenuWidth;
+		subMenuWindow.height = hostMenuHeight;
 		
 		// Network stuff
 		netScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
@@ -183,8 +194,22 @@ public class MainScreen : MonoBehaviour {
 				playerName = 
 					GUILayout.TextField(playerName, maxInputLength, GUILayout.MinWidth (200), GUILayout.MaxWidth(200));
 			}
-			GUILayout.EndHorizontal ();
+			GUILayout.EndHorizontal();
 			
+			GUILayout.BeginHorizontal();
+			{
+				// TODO: add player model selection here!
+				GUILayout.Space (10);
+				for(int nIdx = 0; nIdx < playerUniqueAvatarsNumber; nIdx++) {
+					
+					if(GUILayout.Button(playerAvatarIcons[nIdx])) {
+
+						playerAvatarIdx = nIdx;
+					}
+				}
+			}
+			GUILayout.EndHorizontal();
+
 			GUILayout.Space (10);
 			if (GUILayout.Button ("Create server")) {
 				
@@ -192,6 +217,7 @@ public class MainScreen : MonoBehaviour {
 
 				// FIXME: passing to network script?
 				currentMenu = LobbyMenu;
+
 			} else if (GUILayout.Button ("Back")) {
 				
 				currentMenu = MainMenu;
@@ -241,6 +267,7 @@ public class MainScreen : MonoBehaviour {
 			playerName = 
 				GUILayout.TextField(playerName, 20, GUILayout.MinWidth(200), GUILayout.MaxWidth(200));
 			GUILayout.Space (10);
+			// TODO: add player selection here
 		}
 
 		GUILayout.BeginHorizontal();
@@ -323,5 +350,16 @@ public class MainScreen : MonoBehaviour {
 							Screen.height - buttonHeight*2, buttonWidth, buttonHeight), 
 					"Waiting for the game start...");
 		}
+	}
+
+	/* -------------------------------------------------------------------------------------------------------- */
+	/*
+	 * GENERIC STUFF
+	 */
+	/* -------------------------------------------------------------------------------------------------------- */
+
+	public int GetPlayerAvatarIndex() {
+
+		return playerAvatarIdx;
 	}
 }
