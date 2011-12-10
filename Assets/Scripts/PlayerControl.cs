@@ -69,7 +69,7 @@ public class PlayerControl: MonoBehaviour {
 		playerMotionStatus = status;
 
 		// DEBUG
-		Debug.Log("[PlayerControl]SetMotionStatus: " + status);
+		//Debug.Log("[PlayerControl]SetMotionStatus: " + status);
 	}
 	
 		

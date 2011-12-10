@@ -18,6 +18,7 @@ public class LevelControl : MonoBehaviour {
 	public float height;
 	public AudioClip EndReachedSound;
 	public float levelTimer = 20; // Time of a level game, in seconds. Must be within 120 and 300.
+	public float endRestartTimer = 15;
 	
 	public GameObject[] allPlatforms = null; // All platforms from the level
 	public float platformMinAmplitude = 1.0f;
@@ -34,6 +35,7 @@ public class LevelControl : MonoBehaviour {
 	// PRIVATE
 	private PlayerControl playerControl = null;
 	private bool endOfGame = false;
+	private bool startEndCount = false;
 	private float endTime = 0.0f;
 	private float menuTime = 0.0f;
 	private string playerTimeString;
@@ -45,6 +47,7 @@ public class LevelControl : MonoBehaviour {
 	
 	// Fernando //
 	private ScoreCounter scoreScript;
+	private NetworkGame networkScript;
 	// End Fernando //
 
 	private bool gameStarted = false;
@@ -61,6 +64,8 @@ public class LevelControl : MonoBehaviour {
 		// Fernando //
 		scoreScript = GameObject.Find("GameCode").GetComponent<ScoreCounter>();
 		// End Fernando //
+		
+		networkScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
 
 		menuTime = Time.time;
 	}
@@ -93,9 +98,49 @@ public class LevelControl : MonoBehaviour {
 
 		// This is the main game timer, which is synchronized through network to all clients
 		if(Network.isServer) {
-
-			// Updates the network timer
+			//The game only runs when its actually started
+			if(gameStarted){
+			// Updates the network timer, for platform synchronization
 			TimeCounter += Time.deltaTime;
+			//While its not under visual 0, time should be running, then it should stop
+			if(levelTimer > 0.9f)
+				{
+				//levelTimer = levelTimer - fNetTimer;
+				levelTimer -= Time.deltaTime; // Assuming the timer showing to all players is in sync
+				}
+				else{
+					
+					//No need to keep calling functions once they did what they had to do
+					if(!endOfGame){ 					
+					MatchEnded();
+					endOfGame = true;				
+					}
+					
+					
+				}
+				
+			//TimeSpan.FromSeconds showing level time is faster
+			//if(levelTimer < 0.9f)Debug.Log("secondaryTimer: " + levelTimer);
+			
+			}else{
+				
+				if(startEndCount){
+						
+						endRestartTimer -= Time.deltaTime;
+						
+						//Debug.Log("End Restart Timer: " + endRestartTimer);
+						
+						if(endRestartTimer < 0.5f){
+							if(networkScript != null)
+								networkScript.HostLaunchGameTarget(Application.loadedLevel);
+							else Debug.LogWarning("Could not find networkgame component or object");
+						}
+						
+					}
+				
+				
+				
+			}
 		}
 	}
 
@@ -120,10 +165,8 @@ public class LevelControl : MonoBehaviour {
 		GUI.skin = skin;
 
 		// Show the level timer
-		tsLevelTimer = TimeSpan.FromSeconds(levelTimer - fNetTimer);
+		tsLevelTimer = TimeSpan.FromSeconds(levelTimer);
 		
-		if(levelTimer < 0.0f) Debug.Log("Time's Up");
-				
 		stLevelTimer = string.Format("{0:D2}:{1:D2}", tsLevelTimer.Minutes, tsLevelTimer.Seconds);
 		GUILayout.Label("Time: " + stLevelTimer );
 
@@ -223,10 +266,6 @@ public class LevelControl : MonoBehaviour {
 
 			if(GUILayout.Button("Start"))	{
 
-				//menuTime = Time.time - menuTime;
-				// FIXME: all this must be done through RPC!
-				//GameStarted = true;
-				//playerControl.SetMotionStatus(true);	
 				networkView.RPC("GameStarting", RPCMode.All);
 			}
 		}
@@ -236,7 +275,7 @@ public class LevelControl : MonoBehaviour {
 		}
 	}
 	
-	void DeathMenu(){
+	/*void DeathMenu(){
 		
 		playerControl.SetMotionStatus(false);
 		
@@ -251,7 +290,7 @@ public class LevelControl : MonoBehaviour {
 		
 		
 		GUILayout.EndArea();
-	}
+	}*/
 	
 	void OnTriggerEnter(Collider other){
 		
@@ -311,13 +350,30 @@ public class LevelControl : MonoBehaviour {
 			Debug.Log("Player got to end");
 	}
 	
-	// Fernando //
-	[RPC]
-	void Score(NetworkPlayer player){
+	
+	/*
+	 * @brief		Calls when the timer reaches zero
+	 * @param		
+	 * @return	void
+	 */
+	
+	void MatchEnded(){
 		
-		scoreScript.ScoreUpdate(player);
+		Debug.Log("Match ended once");
 		
-	}// End Fernando //
+		gameStarted = false;
+		startEndCount = true;
+		
+		foreach(ScoreCounter.PlayerScore ps in scoreScript.playersScores)
+			networkView.RPC("UpdateScoreList",RPCMode.Others,ps.netPlayer,ps.playerName,ps.score);
+		
+		
+		scoreScript.SortScore();
+		scoreScript.showScoreBoard = true;
+		
+		//Debug.Log("Start End Count: " + startEndCount);
+		
+	}
 
 	/*
 	 * @brief		A shortcut to change the player motion from another script
@@ -327,7 +383,7 @@ public class LevelControl : MonoBehaviour {
 	public void SetMotionStatus(bool bnStatus) {
 
 		// DEBUG
-		Debug.Log("[LevelControl] Changing SetMotionStatus to:" + bnStatus);
+		//Debug.Log("[LevelControl] Changing SetMotionStatus to:" + bnStatus);
 
 		playerControl.SetMotionStatus(bnStatus);
 	}
@@ -341,18 +397,33 @@ public class LevelControl : MonoBehaviour {
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
 
 		float temp = 0.0f;
+		bool tempShowScoreBoard = false;
+		float tempLevelTimer = 0.0f;
 
 		if(stream.isWriting) {
 
 			// Updates the timer through the network
 			temp = TimeCounter;
+			
+			tempShowScoreBoard = scoreScript.showScoreBoard;
+			
+			tempLevelTimer = levelTimer;
 			stream.Serialize(ref temp);
+			stream.Serialize(ref tempShowScoreBoard);
+			stream.Serialize(ref tempLevelTimer);
+			
 		}
 		else {
 
 			// Gets the timer from the network and updates here, in the client
 			stream.Serialize(ref temp);
+			
+			stream.Serialize(ref tempShowScoreBoard);
+			
+			stream.Serialize(ref tempLevelTimer);
 			TimeCounter = temp;
+			scoreScript.showScoreBoard = tempShowScoreBoard;
+			levelTimer = tempLevelTimer;
 		}
 	}
 
@@ -365,6 +436,32 @@ public class LevelControl : MonoBehaviour {
 
 		return TimeCounter;
 	}
+	
+	
+	/*
+	 * @brief		Sets score when player has reached objective
+	 * @param		NetworkPlayer
+	 * @return	void
+	 */
+	[RPC]
+	void Score(NetworkPlayer player){
+		
+		scoreScript.ScoreUpdate(player);
+		
+	}
+	
+		/*
+	 * @brief		Sets score when player has reached objective
+	 * @param		NetworkPlayer
+	 * @return	void
+	 */
+	[RPC]
+	void UpdateScoreList(NetworkPlayer player,string name, int score){
+		
+		scoreScript.UpdateScoreLists(player,name,score);
+		
+	}
+	
 
 	/*
 	 * @brief		Signal to all clients that the game has started
@@ -393,7 +490,7 @@ public class LevelControl : MonoBehaviour {
 				// Randomizes a new amplitude for this platform
 				float aAmplitude = UnityEngine.Random.Range(platformMinAmplitude,platformMaxAmplitude);
 				// Randomizes a new period for the platform (Speed)
-				float bPeriod = UnityEngine.Random.Range(platformMinPeriod, platformMaxPeriod);
+				float bPeriod = 1.0f;// UnityEngine.Random.Range(platformMinPeriod, platformMaxPeriod);
 
 				// Changes this platform in all connected games
 				networkView.RPC("SetPlatformStartUpValues", RPCMode.All, nIdx, aAmplitude, bPeriod);
