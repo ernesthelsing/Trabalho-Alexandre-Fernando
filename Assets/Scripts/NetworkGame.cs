@@ -9,7 +9,7 @@ public class NetworkGame : MonoBehaviour {
 	public string serverName = "MyGameServer";
 	public string gameTypeOnMasterServer = "MyGameType";
 	
-	public int networkMaxPlayers = 3;
+	public static int networkMaxPlayers = 4; 
 	public string connectToIP = "127.0.0.1";
 	public int networkConnectPort = 25001;
 
@@ -24,8 +24,9 @@ public class NetworkGame : MonoBehaviour {
 	
 	public class PlayerInfo {
 		
-		public string playerName;
-		public NetworkPlayer networkPlayer;
+		public string playerName;							// Network name 
+		public NetworkPlayer networkPlayer;		// Network data from Unity
+		public int playerAvatarIdx;						// The index of the player's character choosen
 	};
 	
 	public static List<PlayerInfo> playerList = new List<PlayerInfo>();
@@ -33,8 +34,8 @@ public class NetworkGame : MonoBehaviour {
 	private bool lauchingGame = false;
 	private int lastLevelIdx = 0;
 
-	public GameObject serverPlayerAvatar;
-	public GameObject clientPlayerAvatar;
+	// Check MainScreen: must match the colors selected there in playerAvatarColors and playerAvatarIcons
+	public GameObject[] playersAvatars = new GameObject[MainScreen.playerUniqueAvatarsNumber];
 
 	public GameObject serverSpawnPoint;
 
@@ -84,7 +85,7 @@ public class NetworkGame : MonoBehaviour {
 	 */
 	public void StartMasterServer() {
 		
-		Network.InitializeServer(networkMaxPlayers, networkConnectPort, false);
+		Network.InitializeServer(networkMaxPlayers-1, networkConnectPort, false);
 
 		if(useMasterServer) {
 			MasterServer.RegisterHost(gameTypeOnMasterServer, serverName, "My comment");
@@ -266,15 +267,12 @@ public class NetworkGame : MonoBehaviour {
 	
 	public void SpawnPlayers() {
 
-		if(Network.isServer) {
+		int playerIdx = MainScreen.Script.GetPlayerAvatarIndex();
 
-			Network.Instantiate(serverPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
+		Vector3 playerSpawnPosition = v3SpawnPosition + new Vector3(0,0, 2 * playerIdx);
 
-		}
-		else {
+		Network.Instantiate(playersAvatars[playerIdx],	playerSpawnPosition, transform.rotation, 0);
 
-			Network.Instantiate(clientPlayerAvatar, v3SpawnPosition, transform.rotation, 0);
-		}
 	}
 
 	public void InitializeSpawnPoint() {
