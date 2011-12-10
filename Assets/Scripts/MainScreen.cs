@@ -20,14 +20,15 @@ public class MainScreen : MonoBehaviour {
 	public float hostMenuOffsetY = 50;
 
 	// Join Menu Stuff
-	public float joinMenuWidth = 500;
-	public float joinMenuHeight = 150;
+	public float joinMenuWidth = 600;
+	public float joinMenuHeight = 300;
 
 	Rect subMenuWindow = new Rect();
 	public float windowOffsetX = 20;
 	public float windowOffsetY = 10;
 
 	public int maxInputLength = 20;
+	public Vector2 scrollPosition;
 
 	public GUISkin skin;
 
@@ -196,19 +197,7 @@ public class MainScreen : MonoBehaviour {
 			}
 			GUILayout.EndHorizontal();
 			
-			GUILayout.BeginHorizontal();
-			{
-				// TODO: add player model selection here!
-				GUILayout.Space (10);
-				for(int nIdx = 0; nIdx < playerUniqueAvatarsNumber; nIdx++) {
-					
-					if(GUILayout.Button(playerAvatarIcons[nIdx])) {
-
-						playerAvatarIdx = nIdx;
-					}
-				}
-			}
-			GUILayout.EndHorizontal();
+			PlayerSelectButtons();
 
 			GUILayout.Space (10);
 			if (GUILayout.Button ("Create server")) {
@@ -262,6 +251,7 @@ public class MainScreen : MonoBehaviour {
 		
 		HostData[] hostsOnline = netScript.GetOnlineHostList();
 		
+		GUILayout.BeginHorizontal ();
 		{
 			GUILayout.Label ("Player name");
 			playerName = 
@@ -269,6 +259,10 @@ public class MainScreen : MonoBehaviour {
 			GUILayout.Space (10);
 			// TODO: add player selection here
 		}
+		GUILayout.EndHorizontal();
+
+		// Player selection
+		PlayerSelectButtons();
 
 		GUILayout.BeginHorizontal();
 		{
@@ -287,18 +281,19 @@ public class MainScreen : MonoBehaviour {
 			} else {
 				
 				foreach (HostData uniqueHost in hostsOnline) {
-					
-					string hostInfo = uniqueHost.gameName + " " + uniqueHost.connectedPlayers + "/" + uniqueHost.playerLimit;
-					
+
+					string hostInfo = 
+						uniqueHost.gameName + " " + uniqueHost.connectedPlayers + "/" + uniqueHost.playerLimit;
+
 					GUILayout.Label (hostInfo);
 					GUILayout.Space (5);
-					
+
 					GUILayout.Label (uniqueHost.comment);
 					GUILayout.Space (5);
 					GUILayout.FlexibleSpace ();
-					
+
 					if (GUILayout.Button ("Connect")) {
-						
+
 						// FIXME: network stuff goes to the network script
 						netScript.ConnectWithServer(uniqueHost);
 						currentMenu = LobbyMenu;
@@ -312,6 +307,27 @@ public class MainScreen : MonoBehaviour {
 			currentMenu = MainMenu;
 		}
 		GUILayout.EndHorizontal ();
+	}
+
+	/*
+	 * @brief		Shows the buttons with icons where the player can select his avatar
+	 * @param		void
+	 * @return	void
+	 */
+	void PlayerSelectButtons() {
+
+			GUILayout.BeginHorizontal();
+			{
+				GUILayout.Space (10);
+				for(int nIdx = 0; nIdx < playerUniqueAvatarsNumber; nIdx++) {
+					
+					if(GUILayout.Button(playerAvatarIcons[nIdx])) {
+
+						playerAvatarIdx = nIdx;
+					}
+				}
+			}
+			GUILayout.EndHorizontal();
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */
