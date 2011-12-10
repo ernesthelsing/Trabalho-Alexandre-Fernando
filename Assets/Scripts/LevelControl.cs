@@ -17,7 +17,7 @@ public class LevelControl : MonoBehaviour {
 	public float width;
 	public float height;
 	public AudioClip EndReachedSound;
-	public float levelTimer = 20; // FIXME: Time of a level game, in seconds. Must be within 120 and 300.
+	public float levelTimer = 20; // Time of a level game, in seconds. Must be within 120 and 300.
 	
 	public GameObject[] allPlatforms = null; // All platforms from the level
 	public float platformMinAmplitude = 1.0f;
