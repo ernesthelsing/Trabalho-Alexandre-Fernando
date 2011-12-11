@@ -329,14 +329,9 @@ public class MainScreen : MonoBehaviour {
 
 			GUILayout.BeginHorizontal();
 			{
-				GUILayout.Space (10);
-				for(int nIdx = 0; nIdx < playerUniqueAvatarsNumber; nIdx++) {
-					
-					if(GUILayout.Button(playerAvatarIcons[nIdx])) {
 
-						playerAvatarIdx = nIdx;
-					}
-				}
+				GUILayout.Space (10);
+				playerAvatarIdx = GUILayout.Toolbar(playerAvatarIdx, playerAvatarIcons);
 			}
 			GUILayout.EndHorizontal();
 	}
