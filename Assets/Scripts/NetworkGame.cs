@@ -69,9 +69,6 @@ public class NetworkGame : MonoBehaviour {
 
 	void OnGUI() {
 
-		//if(lauchingGame)
-			//LauchingGameGUI();
-
 	}
 	
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -182,27 +179,6 @@ public class NetworkGame : MonoBehaviour {
 	 */
 	public void LauchingGameGUI() {
 
-		//
-		// TODO: center on the screen and actually fix everything
-		//
-		//
-		// FIXME: the error on in game chat has to be here
-
-		/*
-		// Show a loading screen or something...
-		GUI.Box(new Rect(Screen.width*0.5f-140, Screen.height*0.5f-25, 280, 50), "");
-
-		if(Application.CanStreamedLevelBeLoaded((Application.loadedLevel+1))){
-		
-			GUI.Label(new Rect(Screen.width*0.5f + 200, Screen.height * 0.5f - 25, 285, 150), "Loaded, starting the game!");
-			Application.LoadLevel((Application.loadedLevel+1));
-		}
-		else{
-		
-			GUI.Label(new Rect(Screen.width/4+200,Screen.height/2-25,285,150), 
-					"Starting..Loading the game: " + Mathf.Floor(Application.GetStreamProgressForLevel((Application.loadedLevel+1))*100) + " %" );
-		}	
-		*/
 	}
 
 	/*
@@ -259,6 +235,23 @@ public class NetworkGame : MonoBehaviour {
 		}
 
 		return null;
+	}
+
+	void OnPlayerDisconnected(NetworkPlayer player) {
+
+		// DEBUG
+		Debug.Log("[NetworkGame] Player disconnected: " + player);
+
+		if(Network.isServer) {
+
+			// Clean-up the player stuff
+			Network.RemoveRPCs(player);
+			Network.DestroyPlayerObjects(player);
+
+			// DEBUG
+			Debug.Log("[NetworkGame] Disconnection cleaned up");
+		}
+
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */

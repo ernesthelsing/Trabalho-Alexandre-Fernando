@@ -149,7 +149,7 @@ public class InGameChat : MonoBehaviour {
 		// DEBUG
 		Debug.Log("[InGameChat]IOnPlayerDisconnected " + playerDisconnected.playerName);
 
-		stDisconnectMsg = playerDisconnected.playerName + "disconnected from server.";
+		stDisconnectMsg = playerDisconnected.playerName + " disconnected from server.";
 		// Send a message to all
 		networkView.RPC("ApplyInGameChatText", RPCMode.All, playerDisconnected.playerName, stDisconnectMsg);
 		
@@ -274,8 +274,8 @@ public class InGameChat : MonoBehaviour {
 	[RPC]
 	void ApplyInGameChatText(string stName, string stMsg) {
 
+		// DEBUG
 		Debug.Log(Network.connections.Length);
-
 		Debug.Log("RPC " + stName + ": " + stMsg);
 
 		LobbyChat.LobbyChatEntry entry = new LobbyChat.LobbyChatEntry();
