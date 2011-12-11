@@ -14,7 +14,7 @@ public class NetworkGame : MonoBehaviour {
 	public int networkConnectPort = 25001;
 
 	// 'Gambitech' to use or not the master server	
-	private bool useMasterServer = true;
+	private bool useMasterServer = false;
 	public bool UseMasterServer {
 		get { return useMasterServer; }
 		set { useMasterServer = value; }
