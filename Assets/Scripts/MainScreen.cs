@@ -18,6 +18,9 @@ public class MainScreen : MonoBehaviour {
 	public float hostMenuWidth = 600;
 	public float hostMenuHeight = 300;
 	public float hostMenuOffsetY = 50;
+	
+	public int levelTimeToolbarInt = 0;
+	public string[] levelTimeToolbarStrings = new string[]{"-2-", "-3-","-4-", "-5-"};
 
 	// Join Menu Stuff
 	public float joinMenuWidth = 600;
@@ -198,9 +201,17 @@ public class MainScreen : MonoBehaviour {
 			GUILayout.EndHorizontal();
 			
 			PlayerSelectButtons();
-
+			
+			GUILayout.BeginHorizontal();
+			GUILayout.Label ("Match Time(in minutes):");
+			levelTimeToolbarInt = GUILayout.Toolbar(levelTimeToolbarInt,levelTimeToolbarStrings);
+			GUILayout.EndHorizontal();
+			
+			
 			GUILayout.Space (10);
 			if (GUILayout.Button ("Create server")) {
+				
+				netScript.levelTimeNetworkGame = levelTimeToolbarInt;
 				
 				netScript.StartMasterServer();
 
