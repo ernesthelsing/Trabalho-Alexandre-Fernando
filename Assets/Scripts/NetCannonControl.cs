@@ -55,7 +55,8 @@ public class NetCannonControl : MonoBehaviour {
 				networkView.RPC("DoTheShootStuff", RPCMode.All, myOwnIndex);
 			}
 
-			networkView.RPC("StopTheShootStuff", RPCMode.All, myOwnIndex);
+			//networkView.RPC("StopTheShootStuff", RPCMode.All, myOwnIndex);
+			StopTheShootStuff(myOwnIndex);
 		}
 	
 	}
@@ -70,7 +71,8 @@ public class NetCannonControl : MonoBehaviour {
 			yield return new WaitForSeconds(waitTime);
 
 			audio.PlayOneShot(blast);
-			bulletClone = Instantiate(bullet,transform.position + offsetVec,transform.rotation) as GameObject;
+//			bulletClone = Instantiate(bullet,transform.position + offsetVec,transform.rotation) as GameObject;
+			bulletClone = Network.Instantiate(bullet, transform.position + offsetVec, transform.rotation, 1) as GameObject;
 			bulletClone.rigidbody.velocity = transform.right * speed;
 	}
 
@@ -81,13 +83,18 @@ public class NetCannonControl : MonoBehaviour {
 
 			animation.Play("Take 001");
 			//yield return new WaitForSeconds(animation.GetClip("Take 001").length);
-			StartCoroutine(Shoot(animation.GetClip("Take 001").length));
-			timeTaken = 0.0f;
-			shootTime = Random.Range(minShootTime, maxShootTime);
+
+			// Server only
+			if(Network.isServer) {
+
+				StartCoroutine(Shoot(animation.GetClip("Take 001").length));
+				timeTaken = 0.0f;
+				shootTime = Random.Range(minShootTime, maxShootTime);
+			}
 		}
 	}
 
-	[RPC]
+//	[RPC]
 	void StopTheShootStuff(int netCannonIdx) {
 
 		if(netCannonIdx == myOwnIndex) {

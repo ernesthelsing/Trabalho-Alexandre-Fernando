@@ -30,9 +30,12 @@ public class ScoreCounter : MonoBehaviour {
 	public List<PlayerScore> playersScores;
 
 	public bool showScoreBoard = false;
+	public static ScoreCounter Script;
 	
 	void Awake() {
 		
+		Script = this;
+
 		playersScores = new List<PlayerScore>();
 		
 		//scoreTitle.material.color = Color.yellow;

@@ -34,25 +34,30 @@ public class BulletControl : MonoBehaviour {
 	
 	void OnCollisionEnter (Collision collided){
 		
-		if(collided.gameObject.name.Equals ("First Person Controller") )
+		// Cannonball VS player
+		if(collided.gameObject.tag.Equals("Player") )
 		{
 			Vector3 start = collided.gameObject.GetComponent<PlayerControl>().StartingPosition;
 			collided.gameObject.transform.position = start;
-			// FIXME: there no more lives. The player should restart the level
-			//collided.gameObject.GetComponent<PlayerControl>().lives -= 1;
+			
+			// DEBUG
 			Debug.Log("Hit Player died");
 		}
 		
-		if(collided.gameObject.name.Equals ("Cannonball(Clone)") )
+		// Cannonball VS Cannonball (!?!?)
+		if(collided.gameObject.tag.Equals("Cannonball") )
 		{
 			GameObject.Destroy(collided.gameObject);
 			GameObject.Destroy(transform.gameObject);
 			//Debug.Log("Hit another cannonball died");
 		}
 		
-		if(collided.gameObject.tag.Equals("Platform") )
+		// Cannonball VS Platform
+		if(collided.gameObject.tag.Equals("Platform") ) {
+
 			startCount = true;
 			//Debug.Log("Hit a platform");
+		}
 		
 	}
 	

@@ -17,7 +17,7 @@ public class LevelControl : MonoBehaviour {
 	public float width;
 	public float height;
 	public AudioClip EndReachedSound;
-	public float levelTimer = 20; // Time of a level game, in seconds. Must be within 120 and 300.
+	public float levelTimer = 30; // Time of a level game, in seconds. Must be within 120 and 300.
 	public float endRestartTimer = 15;
 	
 	public GameObject[] allPlatforms = null; // All platforms from the level
@@ -265,16 +265,19 @@ public class LevelControl : MonoBehaviour {
 	 */
 	void MainMenu(){
 		
-		if(Network.isServer) {
+		if(!ScoreCounter.Script.showScoreBoard) {
 
-			if(GUILayout.Button("Start"))	{
+			if(Network.isServer) {
 
-				networkView.RPC("GameStarting", RPCMode.All);
+				if(GUILayout.Button("Start"))	{
+
+					networkView.RPC("GameStarting", RPCMode.All);
+				}
 			}
-		}
-		else {
+			else {
 
-			GUILayout.Label("Waiting for server start the game.");
+				GUILayout.Label("Waiting for server start the game.");
+			}
 		}
 	}
 	
