@@ -15,15 +15,14 @@ public class ScoreCounter : MonoBehaviour {
 	public GUIStyle scoreTextStyle = new GUIStyle();
 	public Font scoreTitle;
 	
-	
-	//private InGamePlay gameScript;
-	//private LevelControl levelScript;
+	private NetworkGame networkScript;
 	
 	public class PlayerScore{
 		
 		public NetworkPlayer netPlayer;
 		public string playerName;
 		public int score;
+		public Color nameColor;
 		
 	}
 	
@@ -32,15 +31,21 @@ public class ScoreCounter : MonoBehaviour {
 	public bool showScoreBoard = false;
 	public static ScoreCounter Script;
 	
+	
+	//int toolbarint = 0;
+	//string[] toolbarstrings = new string[]{"Toolbar 1", "Toolbar 2","Toolbar 3", "Toolbar 4"};
+	
+	
 	void Awake() {
 		
-		Script = this;
-
+		networkScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
+		
 		playersScores = new List<PlayerScore>();
 		
 		//scoreTitle.material.color = Color.yellow;
-		
+		if(scoreTitle != null)
 		scoreTextStyle.font = scoreTitle;
+		
 		scoreTextStyle.alignment = TextAnchor.MiddleCenter;
 		scoreTextStyle.normal.textColor = Color.yellow;
 		scoreTextStyle.fontSize = 30;
@@ -48,6 +53,7 @@ public class ScoreCounter : MonoBehaviour {
 		screenX = Screen.width * 0.5f - scoreMenuHeight * 0.5f;
 		screenY = Screen.height * 0.5f - scoreMenuWidth * 0.5f;
 		
+		Script = this;
 	}
 
 	// Use this for initialization
@@ -59,9 +65,11 @@ public class ScoreCounter : MonoBehaviour {
 		
 		//This adds the server player
 		PlayerScore tempPlayer = new PlayerScore();
+		NetworkGame.PlayerInfo tempPlayerInfo = networkScript.GetPlayerInfoFromNetwork(networkView.owner);
 		
 		tempPlayer.netPlayer = networkView.owner;
-		tempPlayer.playerName = "";
+		tempPlayer.playerName = tempPlayerInfo.playerName;
+		tempPlayer.nameColor = ReturnColorBasedOnIndex(tempPlayerInfo.playerAvatarIdx);
 		tempPlayer.score = 0;
 		
 		playersScores.Add(tempPlayer);
@@ -72,9 +80,11 @@ public class ScoreCounter : MonoBehaviour {
 			//Debug.Log("Found someone");
 			
 			tempPlayer = new PlayerScore();
+			tempPlayerInfo = networkScript.GetPlayerInfoFromNetwork(np);
 			
 			tempPlayer.netPlayer = np;
-			tempPlayer.playerName = "";
+			tempPlayer.playerName = tempPlayerInfo.playerName;
+			tempPlayer.nameColor = ReturnColorBasedOnIndex(tempPlayerInfo.playerAvatarIdx);
 			tempPlayer.score = 0;
 			playersScores.Add(tempPlayer);
 				
@@ -114,6 +124,11 @@ public class ScoreCounter : MonoBehaviour {
 	//Builds the scoreboard needs polish
 	void ScoreBoard(){
 		
+		GUIStyle playersTextStyle = new GUIStyle();
+		
+		if(scoreTitle != null)
+		playersTextStyle.font = scoreTitle;
+		
 		GUILayout.BeginArea (new Rect (screenX, 100 + screenY, scoreMenuWidth, scoreMenuHeight));
 			
 			GUILayout.BeginVertical("box");
@@ -125,17 +140,25 @@ public class ScoreCounter : MonoBehaviour {
 			GUILayout.EndVertical();
 		
 			foreach(PlayerScore ps in playersScores){
+			
+				playersTextStyle.normal.textColor = ps.nameColor;
+			
 				GUILayout.BeginHorizontal("box");
-				GUILayout.Label(ps.playerName);
+				GUILayout.Label(ps.playerName,playersTextStyle);
 				GUILayout.Space(10);
-				GUILayout.Label("Score: ");
-				GUILayout.Label(ps.score.ToString());
+			
+				playersTextStyle.normal.textColor = Color.white;
+			
+				GUILayout.Label("Score: ",playersTextStyle);
+				GUILayout.Label(ps.score.ToString(),playersTextStyle);
 				GUILayout.EndHorizontal();
 			}
 			
 			//GUILayout.Label(ps.playerName + " scores " + ps.score);
+		//toolbarint = GUILayout.Toolbar(toolbarint,toolbarstrings);
 		
-		
+		//Debug.Log("Toolbarint:" + toolbarint);
+				
 		GUILayout.EndArea();
 		
 		
@@ -180,7 +203,31 @@ public class ScoreCounter : MonoBehaviour {
 			}
 		}
 		
+	}
+	
+	
+	Color ReturnColorBasedOnIndex(int playerIdx){
 		
+		switch(playerIdx)
+			{
+			case 0:
+				return Color.red;
+				break;
+			case 1:
+				return Color.green;
+				break;
+			case 2:
+				return Color.blue;
+				break;
+			case 3:
+				return Color.yellow;
+				break;
+			default:
+				return Color.white;
+				break;
+			}	
+		
+		return Color.black;
 	}
 	
 	// Update is called once per frame

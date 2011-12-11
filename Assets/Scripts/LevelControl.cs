@@ -61,11 +61,13 @@ public class LevelControl : MonoBehaviour {
 		
 		Script = this;
 		
-		// Fernando //
+		
 		scoreScript = GameObject.Find("GameCode").GetComponent<ScoreCounter>();
-		// End Fernando //
+
 		
 		networkScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
+		
+		levelTimer = (2 + networkScript.levelTimeNetworkGame) * 60;
 
 		menuTime = Time.time;
 	}

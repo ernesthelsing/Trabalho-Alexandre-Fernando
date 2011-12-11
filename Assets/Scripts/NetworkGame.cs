@@ -40,6 +40,8 @@ public class NetworkGame : MonoBehaviour {
 	public GameObject serverSpawnPoint;
 
 	private Vector3 v3SpawnPosition = Vector3.zero;
+	
+	public int levelTimeNetworkGame = 0;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
