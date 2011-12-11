@@ -208,26 +208,28 @@ public class ScoreCounter : MonoBehaviour {
 	
 	Color ReturnColorBasedOnIndex(int playerIdx){
 		
+		Color retColor = Color.black;
+
 		switch(playerIdx)
 			{
 			case 0:
-				return Color.red;
+				retColor = Color.red;
 				break;
 			case 1:
-				return Color.green;
+				retColor =  Color.green;
 				break;
 			case 2:
-				return Color.blue;
+				retColor = Color.blue;
 				break;
 			case 3:
-				return Color.yellow;
+				retColor = Color.yellow;
 				break;
 			default:
-				return Color.white;
+				retColor = Color.white;
 				break;
 			}	
 		
-		return Color.black;
+		return retColor;
 	}
 	
 	// Update is called once per frame
