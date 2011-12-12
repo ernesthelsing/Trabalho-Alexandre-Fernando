@@ -273,8 +273,7 @@ public class NetworkGame : MonoBehaviour {
 		}else{
 			
 			Debug.Log("Disconected from server");
-			Application.LoadLevel(0);
-			
+			Application.LoadLevel("main_screen"); // Go back to the main screen
 		}
 	}
 

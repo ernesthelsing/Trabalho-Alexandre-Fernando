@@ -1,13 +1,6 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\InGameChat.cs">
-    <Files>
-      <File FileName="Assets\Scripts\LevelControl.cs" Line="84" Column="1" />
-      <File FileName="Assets\Scripts\InGameChat.cs" Line="155" Column="26" />
-      <File FileName="Assets\Scripts\InGamePlay.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\NetworkGame.cs" Line="19" Column="34" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
