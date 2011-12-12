@@ -434,7 +434,7 @@ public class LevelControl : MonoBehaviour {
 			levelTimer = tempLevelTimer;
 		}
 	}
-
+	
 	/*
 	 * @brief		Returns the main game timer
 	 * @param		void

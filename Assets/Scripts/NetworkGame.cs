@@ -237,6 +237,11 @@ public class NetworkGame : MonoBehaviour {
 		return null;
 	}
 
+	/*
+	 * @brief		What to do when a player disconnects from the game
+	 * @param		player	The NetworkPlayer for the disconnected player
+	 * @return	void
+	 */
 	void OnPlayerDisconnected(NetworkPlayer player) {
 
 		// DEBUG
@@ -252,6 +257,25 @@ public class NetworkGame : MonoBehaviour {
 			Debug.Log("[NetworkGame] Disconnection cleaned up");
 		}
 
+	}
+
+	/*
+	 * @brief	When the server disconnects
+	 * @param	dcinfo	Network disconnection info
+	 * @return	void
+	 */
+	void OnDisconnectedFromServer(NetworkDisconnection dcinfo){
+		
+		if(Network.isServer){
+			
+		Debug.Log("Server has been disconected");	
+			
+		}else{
+			
+			Debug.Log("Disconected from server");
+			Application.LoadLevel(0);
+			
+		}
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */

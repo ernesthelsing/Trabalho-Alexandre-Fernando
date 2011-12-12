@@ -33,6 +33,11 @@ public class BulletControl : MonoBehaviour {
 	}
 	
 	void OnCollisionEnter (Collision collided){
+
+
+		// DEBUG
+		Debug.Log("[BulletControl] Bullet collided with " + collided.gameObject.name);
+
 		
 		// Cannonball VS player
 		if(collided.gameObject.tag.Equals("Player") )
@@ -43,22 +48,26 @@ public class BulletControl : MonoBehaviour {
 			// DEBUG
 			Debug.Log("Hit Player died");
 		}
-		
-		// Cannonball VS Cannonball (!?!?)
-		if(collided.gameObject.tag.Equals("Cannonball") )
+		else if(collided.gameObject.tag.Equals("Cannonball") )
 		{
 			GameObject.Destroy(collided.gameObject);
 			GameObject.Destroy(transform.gameObject);
 			//Debug.Log("Hit another cannonball died");
 		}
-		
-		// Cannonball VS Platform
-		if(collided.gameObject.tag.Equals("Platform") ) {
+		else if(collided.gameObject.tag.Equals("Platform") ) {
 
 			startCount = true;
 			//Debug.Log("Hit a platform");
 		}
-		
+		else {
+			// Collided with anything else
+
+			// DEBUG
+			Debug.Log("[BulletControl] Bullet collided with " + collided.gameObject.name);
+
+			GameObject.Destroy(transform.gameObject);
+		}
+
 	}
 	
 	
