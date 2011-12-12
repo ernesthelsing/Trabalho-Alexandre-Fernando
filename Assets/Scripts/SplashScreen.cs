@@ -55,7 +55,7 @@ public class SplashScreen : MonoBehaviour
     public float waitTime = 0.5f; // seconds to wait before fading out
     public bool waitForInput = false; // if true, this acts as a "press any key to continue"
     public bool startAutomatically = true;
-	public AudioClip splashAudioClip = null;
+		public AudioClip splashAudioClip = null;
 	
     private float timeFadingInFinished = 0.0f;
 
