@@ -16,7 +16,6 @@ public class LevelControl : MonoBehaviour {
 	public GUISkin skin;
 	public float width;
 	public float height;
-	public AudioClip EndReachedSound;
 	public float levelTimer = 30; // Time of a level game, in seconds. Must be within 120 and 300.
 	public float endRestartTimer = 15;
 	
@@ -60,10 +59,8 @@ public class LevelControl : MonoBehaviour {
 	void Awake(){
 		
 		Script = this;
-		
-		
-		scoreScript = GameObject.Find("GameCode").GetComponent<ScoreCounter>();
 
+		scoreScript = GameObject.Find("GameCode").GetComponent<ScoreCounter>();
 		
 		networkScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
 		
@@ -75,7 +72,6 @@ public class LevelControl : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		
-		// FIXME:
 		NetworkGame.Script.InitializeSpawnPoint();
 		NetworkGame.Script.SpawnPlayers();
 		
@@ -217,42 +213,6 @@ public class LevelControl : MonoBehaviour {
 				showExitButton = false;
 			}
 		}
-
-		// TODO: clean this mess!
-		/*
-		float screenX = Screen.width * 0.5f - width * 0.5f;
-		float screenY = Screen.height * 0.5f - height * 0.5f;
-		
-
-		GUILayout.BeginArea(new Rect(screenX,screenY,width,height) );
-		
-		if(endOfGame)
-		{
-			
-			GUILayout.Label("You finished the level in " + playerTimeString + " seconds");
-
-			if(GUILayout.Button("Restart")) {
-
-				// FIXME: this is likely to NOT work on network. I guess it's best to just respawn the player
-				//Application.LoadLevel("Game");
-				// DEBUG
-				Debug.Log("Should load the level again. Waiting to be fixed.");
-			}
-			playerControl.SetMotionStatus(false);
-		}
-		else
-		{
-
-			MainMenu();
-		}
-		
-		GUILayout.EndArea();
-		*/
-
-		//GUILayout.Label("Time Startup: " + Time.realtimeSinceStartup);
-		//GUILayout.Label("Time DeltaTime: " + Time.deltaTime);
-		//GUILayout.Label("Frame Count: " + Time.frameCount);
-
 	}
 	
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -283,34 +243,6 @@ public class LevelControl : MonoBehaviour {
 		}
 	}
 	
-	/*void DeathMenu(){
-		
-		playerControl.SetMotionStatus(false);
-		
-		float screenX = Screen.width * 0.5f - width * 0.5f;
-		float screenY = Screen.height * 0.5f - height * 0.5f;
-		
-		GUILayout.BeginArea(new Rect(screenX,screenY,width,height) );
-		
-		GUILayout.Label("You lost all your lives");
-		if(GUILayout.Button("Restart"))
-			Application.LoadLevel("Game");
-		
-		
-		GUILayout.EndArea();
-	}*/
-	
-	void OnTriggerEnter(Collider other){
-		
-		Debug.Log("This guy got to the end " + other.gameObject.name);
-		
-		//if(other.gameObject.name.Equals("First Person Controller"))
-		if(other.gameObject.tag.Equals("Player")) {
-
-			PlayerReachedEndArea(other.gameObject);
-		}
-	}
-
 	//
 	public void SetPlayerGameObject(GameObject goPlayer) {
 
@@ -329,33 +261,22 @@ public class LevelControl : MonoBehaviour {
 	 * @param		
 	 * @return	void
 	 */
-	void PlayerReachedEndArea(GameObject goPlayer) {
+	public void PlayerReachedEndArea(GameObject goPlayer) {
 
-		// Play a sound
-		if(EndReachedSound != null) {
-
-			audio.PlayOneShot(EndReachedSound);
-		}
-		
 		// Fernando //
-		if(Network.isServer)
+		if(Network.isServer) {
+
 			scoreScript.ScoreUpdate(goPlayer.networkView.owner);
-		else
+		}
+		else {
+
 			networkView.RPC("Score",RPCMode.Server,goPlayer.networkView.owner);
+		}
 		// End Fernando //
 		
 		// Moves the player back to the respawn point
 		Vector3 start = goPlayer.GetComponent<PlayerControl>().StartingPosition;
 		goPlayer.transform.position = start;
-		
-
-		// FIXME: clean the stuff below
-		//	endOfGame = true;
-			endTime = Time.realtimeSinceStartup - menuTime;
-			Debug.Log("Player got to end and menuTime is " + menuTime);
-			playerTimeString = string.Format("{0:0.00}", endTime);
-			//Toggle();
-			Debug.Log("Player got to end");
 	}
 	
 	

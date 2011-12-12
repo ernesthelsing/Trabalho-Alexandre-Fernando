@@ -18,7 +18,7 @@ public class NetworkCharacterControl : MonoBehaviour {
 			SetMotionStatus(true);
 
 			// DEBUG
-			Debug.Log("[NetworkCharacterControl] Setting player to " + gameObject);
+			//Debug.Log("[NetworkCharacterControl] Setting player to " + gameObject);
 		}
 	}
 	
@@ -84,6 +84,9 @@ public class NetworkCharacterControl : MonoBehaviour {
 	
 	public void SetMotionStatus(bool status){
 		
+		// DEBUG
+		//Debug.Log("[NetworkCharacterControl] Changing SetMotionStatus to:" + status);
+
 		GetComponent<CharacterController>().enabled = status;
 		GetComponent<FPSInputController>().enabled = status;
 		GetComponent<MouseLook>().enabled = status;
