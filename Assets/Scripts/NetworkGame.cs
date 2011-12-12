@@ -268,13 +268,18 @@ public class NetworkGame : MonoBehaviour {
 		
 		if(Network.isServer){
 			
-		Debug.Log("Server has been disconected");	
-			
+			// DEBUG
+			Debug.Log("[NetworkGame] Server has been disconected");	
 		}else{
-			
-			Debug.Log("Disconected from server");
+		
+			// DEBUG	
+			Debug.Log("[NetworkGame] Disconected from server");
 			Application.LoadLevel("main_screen"); // Go back to the main screen
 		}
+		
+		// DEBUG
+		Debug.Log("[NetworkGame] Destroying this object.");
+		Destroy(gameObject);
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */
