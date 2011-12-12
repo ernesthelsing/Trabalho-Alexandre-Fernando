@@ -18,12 +18,28 @@ public class NetCannonControl : MonoBehaviour {
 	private float shootTime;
 	private float timeTaken;
 	private Vector3 offsetVec;
+	private ParticleEmitter pEmitter = null;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
 	 */
 	/* -------------------------------------------------------------------------------------------------------- */
+	void Awake() {
+
+ 		//pEmitter = GetComponent<ParticleEmitter>();
+ 		pEmitter = gameObject.GetComponentInChildren<ParticleEmitter>();
+		if(pEmitter == null) {
+
+			// DEBUG
+			Debug.Log("[NetCannonControl] ParticleEmitter not found!");
+		}
+		else {
+
+			// Disables the particle emission
+			pEmitter.emit = false; 
+		}
+	}
 	// Use this for initialization
 	void Start () {
 		
@@ -69,6 +85,12 @@ public class NetCannonControl : MonoBehaviour {
 	IEnumerator Shoot(float waitTime){
 		
 			yield return new WaitForSeconds(waitTime);
+
+			// NEW FEATURE!
+			if(pEmitter != null) {
+			
+				pEmitter.Emit();
+			}
 
 			audio.PlayOneShot(blast);
 //			bulletClone = Instantiate(bullet,transform.position + offsetVec,transform.rotation) as GameObject;
