@@ -279,6 +279,7 @@ public class NetworkGame : MonoBehaviour {
 		
 		// DEBUG
 		Debug.Log("[NetworkGame] Destroying this object.");
+		// This object NetworkCode must always be destroyed when a new level is loaded
 		Destroy(gameObject);
 	}
 
