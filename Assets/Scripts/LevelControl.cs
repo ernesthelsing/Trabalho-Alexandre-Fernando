@@ -293,8 +293,13 @@ public class LevelControl : MonoBehaviour {
 		gameStarted = false;
 		startEndCount = true;
 		
-		foreach(ScoreCounter.PlayerScore ps in scoreScript.playersScores)
-			networkView.RPC("UpdateScoreList",RPCMode.Others,ps.netPlayer,ps.playerName,ps.score);
+		if(Network.isServer)
+		foreach(ScoreCounter.PlayerScore ps in scoreScript.playersScores){
+			
+			NetworkGame.PlayerInfo tempPlayerInfo = networkScript.GetPlayerInfoFromNetwork(ps.netPlayer);
+			
+			networkView.RPC("UpdateScoreList",RPCMode.Others,ps.netPlayer,ps.playerName,ps.score,tempPlayerInfo.playerAvatarIdx);
+		}
 		
 		
 		scoreScript.SortScore();
@@ -385,9 +390,9 @@ public class LevelControl : MonoBehaviour {
 	 * @return	void
 	 */
 	[RPC]
-	void UpdateScoreList(NetworkPlayer player,string name, int score){
+	void UpdateScoreList(NetworkPlayer player,string name, int score, int idxColor){
 		
-		scoreScript.UpdateScoreLists(player,name,score);
+		scoreScript.UpdateScoreLists(player,name,score,idxColor);
 		
 	}
 	

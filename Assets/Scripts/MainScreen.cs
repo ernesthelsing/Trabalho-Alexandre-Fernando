@@ -349,8 +349,8 @@ public class MainScreen : MonoBehaviour {
 	 */
 	void LobbyMenu() {
 	
-		// Defines the menu area	
-		LobbyPlayerSetup.Script.ShowThisMenu();
+		// Defines the menu area, this is a desperate measure	
+		//LobbyPlayerSetup.Script.ShowThisMenu();
 
 		if(Network.isServer) {
 

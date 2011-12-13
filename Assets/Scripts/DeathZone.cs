@@ -29,8 +29,9 @@ public class DeathZone : MonoBehaviour {
 				Debug.Log("Player died");
 			}
 			
-			if(other.gameObject.name.Equals("Cannonball(Clone)"))
-				GameObject.Destroy(other.gameObject);
+			//if(other.gameObject.name.Equals("Cannonball(Clone)"))
+				//Network.Destroy(other.gameObject);
+				//GameObject.Destroy(other.gameObject);
 		
 		}
 		

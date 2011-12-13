@@ -14,7 +14,7 @@ public class NetworkGame : MonoBehaviour {
 	public int networkConnectPort = 25001;
 
 	// 'Gambitech' to use or not the master server	
-	private bool useMasterServer = false;
+	private bool useMasterServer = true;
 	public bool UseMasterServer {
 		get { return useMasterServer; }
 		set { useMasterServer = value; }
@@ -217,6 +217,16 @@ public class NetworkGame : MonoBehaviour {
 				break;
 			}
 		}
+		
+		foreach(ScoreCounter.PlayerScore entry in ScoreCounter.Script.playersScores) {
+
+			if(entry.netPlayer == player) {
+
+				ScoreCounter.Script.playersScores.Remove(entry);
+				break;
+			}
+		}
+		
 	}
 
 	/*
@@ -248,7 +258,9 @@ public class NetworkGame : MonoBehaviour {
 		Debug.Log("[NetworkGame] Player disconnected: " + player);
 
 		if(Network.isServer) {
-
+			
+			InGameChat.Script.ClientPlayerDisconnected(player);
+			
 			// Clean-up the player stuff
 			Network.RemoveRPCs(player);
 			Network.DestroyPlayerObjects(player);
@@ -274,7 +286,8 @@ public class NetworkGame : MonoBehaviour {
 		
 			// DEBUG	
 			Debug.Log("[NetworkGame] Disconected from server");
-			Application.LoadLevel("main_screen"); // Go back to the main screen
+			Application.Quit();
+			//Application.LoadLevel("main_screen"); // Go back to the main screen
 		}
 		
 		// DEBUG

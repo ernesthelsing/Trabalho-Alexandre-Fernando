@@ -178,13 +178,15 @@ public class ScoreCounter : MonoBehaviour {
 		
 	}
 	
-	public void UpdateScoreLists(NetworkPlayer player,string name, int score){
+	public void UpdateScoreLists(NetworkPlayer player,string name, int score, int idxColor){
 		
 		PlayerScore tempPlayer = new PlayerScore();
 		
 		tempPlayer.netPlayer = player;
 		tempPlayer.playerName = name;
 		tempPlayer.score = score;
+		tempPlayer.nameColor = ReturnColorBasedOnIndex(idxColor);
+		                                               
 		
 		playersScores.Add(tempPlayer);
 		

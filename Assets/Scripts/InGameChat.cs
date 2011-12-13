@@ -32,6 +32,8 @@ public class InGameChat : MonoBehaviour {
 
 	public float receivedMessageTimer = 5.0f;
 	private float showReceivedMessageTimer;
+	
+	public static InGameChat Script;
 
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
@@ -41,7 +43,9 @@ public class InGameChat : MonoBehaviour {
 
 	// Used when the game start
 	void Awake() {
-
+		
+		Script = this;
+		
 		mainScreenScript = MainScreen.Script;
 		playerName = MainScreen.playerName;
 
@@ -134,7 +138,7 @@ public class InGameChat : MonoBehaviour {
 	 * @param		NetworkPlayer player	The player data structure on the network
 	 * @return	void
 	 */
-	void OnPlayerDisconnected(NetworkPlayer player) {
+	public void ClientPlayerDisconnected(NetworkPlayer player) {
 
 		string stDisconnectMsg;
 		NetworkGame.PlayerInfo playerDisconnected = NetworkGame.Script.GetPlayerInfoFromNetwork(player);

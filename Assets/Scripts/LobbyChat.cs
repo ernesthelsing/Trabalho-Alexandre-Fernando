@@ -204,8 +204,9 @@ public class LobbyChat : MonoBehaviour
 		}
 
 		playerAvatarIdx = MainScreen.playerAvatarIdx;
-
-		showChat = true;
+		
+		// This is supposed to be TRUE but somehow is not working
+		showChat = false;
 		inputField = "";
 		chatEntries = new List<LobbyChatEntry>();
 	}

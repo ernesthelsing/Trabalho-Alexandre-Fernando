@@ -20,11 +20,15 @@ public class BulletControl : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		
+		if(!Network.isServer) return;
+		
 		if(startCount)
 		{
 			
 			if(timeTaken > timeToDissapear)
-				GameObject.Destroy(transform.gameObject);
+				Network.Destroy(transform.gameObject);
+				//if(Network.isServer)
+				//GameObject.Destroy(transform.gameObject);
 			
 			
 			timeTaken += Time.deltaTime;
@@ -48,10 +52,14 @@ public class BulletControl : MonoBehaviour {
 			// DEBUG
 			Debug.Log("Hit Player died");
 		}
-		else if(collided.gameObject.tag.Equals("Cannonball") )
+		if(!Network.isServer) return;
+		if(collided.gameObject.tag.Equals("Cannonball") )
 		{
-			GameObject.Destroy(collided.gameObject);
-			GameObject.Destroy(transform.gameObject);
+			startCount = true;
+			//GameObject.Destroy(collided.gameObject);
+			//Network.Destroy(collided.gameObject);
+			//GameObject.Destroy(transform.gameObject);
+			//Network.Destroy(transform.gameObject);
 			//Debug.Log("Hit another cannonball died");
 		}
 		else if(collided.gameObject.tag.Equals("Platform") ) {
@@ -64,8 +72,10 @@ public class BulletControl : MonoBehaviour {
 
 			// DEBUG
 			Debug.Log("[BulletControl] Bullet collided with " + collided.gameObject.name);
-
-			GameObject.Destroy(transform.gameObject);
+			startCount = true;
+			//GameObject.Destroy(transform.gameObject);
+			//Network.Destroy(transform.gameObject);
+			
 		}
 
 	}
