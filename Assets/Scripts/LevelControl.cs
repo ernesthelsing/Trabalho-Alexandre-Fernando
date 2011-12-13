@@ -62,8 +62,8 @@ public class LevelControl : MonoBehaviour {
 		
 		networkScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
 		
-		//levelTimer = (2 + networkScript.levelTimeNetworkGame) * 60;
-		levelTimer = 5.0f;
+		levelTimer = (2 + networkScript.levelTimeNetworkGame) * 60;
+		//levelTimer = 5.0f;
 
 		menuTime = Time.time;
 	}
