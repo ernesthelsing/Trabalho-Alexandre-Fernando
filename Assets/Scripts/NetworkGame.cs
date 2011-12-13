@@ -6,8 +6,8 @@ public class NetworkGame : MonoBehaviour {
 	// Points to itself
 	public static NetworkGame Script;
 
-	public string serverName = "MyGameServer";
-	public string gameTypeOnMasterServer = "MyGameType";
+	public string serverName = "DescartedServer";
+	public string gameTypeOnMasterServer = "DescartedGame";
 	
 	public static int networkMaxPlayers = 4; 
 	public string connectToIP = "127.0.0.1";
@@ -43,6 +43,12 @@ public class NetworkGame : MonoBehaviour {
 	
 	public int levelTimeNetworkGame = 0;
 
+	// Error window
+	public bool showErrorWindow = false;
+	public Rect errorWindowRect = new Rect();
+	private string errorMessageString = ""; 
+	public GUISkin skin;
+
 	/* -------------------------------------------------------------------------------------------------------- */
 	/*
 	 * UNITY STUFF
@@ -55,6 +61,15 @@ public class NetworkGame : MonoBehaviour {
 		//http://unity3d.com/support/documentation/Components/net-NetworkLevelLoad.html
 		DontDestroyOnLoad(this);
 		networkView.group = 1;
+
+		/* HACK TO USE LOCAL MASTER SERVER */
+		/*
+		MasterServer.ipAddress = "127.0.0.1";
+		MasterServer.port = 23466;
+		Network.natFacilitatorIP = "127.0.0.1";
+		Network.natFacilitatorPort = 50005; // your own port number
+		*/
+
 	}
 	
 	// Use this for initialization
@@ -69,6 +84,42 @@ public class NetworkGame : MonoBehaviour {
 
 	void OnGUI() {
 
+		GUI.skin = skin;
+
+		if(!showErrorWindow)
+			return;
+
+		errorWindowRect.width = Screen.width - 20;;
+		errorWindowRect.height = 60;
+		errorWindowRect.x = 10;
+		errorWindowRect.y = Screen.height - errorWindowRect.height -20;
+
+		GUILayout.BeginArea(new Rect(errorWindowRect.x, errorWindowRect.y, 
+					errorWindowRect.width, errorWindowRect.height));
+		{
+			errorWindowRect = GUI.Window(7, errorWindowRect, ErrorWindow, "Error!");
+		}
+		GUILayout.EndArea();
+	}
+
+	void ErrorWindow(int windowID) {
+
+		GUILayout.BeginHorizontal();
+		{
+
+			GUILayout.Label(errorMessageString);
+
+			if(GUILayout.Button("Ok")) {
+
+				showErrorWindow = false;
+			}
+			if(GUILayout.Button("Exit game")) {
+
+				showErrorWindow = false;
+				Application.Quit();
+			}
+		}
+		GUILayout.EndHorizontal();
 	}
 	
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -258,7 +309,8 @@ public class NetworkGame : MonoBehaviour {
 		Debug.Log("[NetworkGame] Player disconnected: " + player);
 
 		if(Network.isServer) {
-			
+		
+			// FIXME: when the game is not started, this generates a error!	
 			InGameChat.Script.ClientPlayerDisconnected(player);
 			
 			// Clean-up the player stuff
@@ -278,15 +330,24 @@ public class NetworkGame : MonoBehaviour {
 	 */
 	void OnDisconnectedFromServer(NetworkDisconnection dcinfo){
 		
+		// DEBUG
+		Debug.Log("[NetworkGame] Disconnection from server: " + dcinfo);
+
 		if(Network.isServer){
 			
 			// DEBUG
 			Debug.Log("[NetworkGame] Server has been disconected");	
-		}else{
+
+			errorMessageString = "Server disconnected";
+		}
+		else{
 		
 			// DEBUG	
 			Debug.Log("[NetworkGame] Disconected from server");
-			Application.Quit();
+
+			errorMessageString = "Disconnected from server";
+			showErrorWindow = true;
+
 			//Application.LoadLevel("main_screen"); // Go back to the main screen
 		}
 		
@@ -294,6 +355,21 @@ public class NetworkGame : MonoBehaviour {
 		Debug.Log("[NetworkGame] Destroying this object.");
 		// This object NetworkCode must always be destroyed when a new level is loaded
 	//	Destroy(gameObject);
+	}
+
+	/*
+	 * @brief		Called when we cannot connect to the MasterServer for some reason
+	 * @param		NetworkConnectionError info	Info on the error
+	 * @return	void
+	 */
+	void OnFailedToConnectToMasterServer(NetworkConnectionError errorInfo) {
+
+		// DEBUG
+		Debug.LogError("[NetworkGame] Could not connect to the master server: " + errorInfo);
+
+		errorMessageString = "Could not connect to the master server";
+		// Turn on error message
+		showErrorWindow = true;
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */

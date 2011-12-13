@@ -119,7 +119,6 @@ public class ScoreCounter : MonoBehaviour {
 		
 			ScoreBoard();
 		}
-		
 	}
 	
 	//Builds the scoreboard needs polish
@@ -154,9 +153,7 @@ public class ScoreCounter : MonoBehaviour {
 				GUILayout.Label(ps.score.ToString(),playersTextStyle);
 				GUILayout.EndHorizontal();
 			}
-		
-		GUILayout.EndArea();
-		
+
 		playersTextStyle.normal.background = GUI.skin.GetStyle("Button").normal.background;
 		playersTextStyle.alignment = TextAnchor.MiddleCenter;
 		
@@ -167,6 +164,8 @@ public class ScoreCounter : MonoBehaviour {
 				// Go back to the main menu
 				Application.LoadLevel("main_screen");
 			}
+				
+		GUILayout.EndArea();
 		
 		
 	}

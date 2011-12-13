@@ -55,6 +55,7 @@ public class MainScreen : MonoBehaviour {
 	private string serverName;
 	public static string playerName = "";
 	private NetworkGame netScript = null;
+	private bool connectionToMasterServerIsOk = false;
 
 	// chat stuff
 	//private Vector2 chatScrollPos = new Vector2 (10, 20);
@@ -83,7 +84,7 @@ public class MainScreen : MonoBehaviour {
 		
 		// Menu stuff
 		screenX = Screen.width * 0.5f - menuWidth * 0.5f;
-		screenY = 200;
+		screenY = Screen.height * 0.5f - menuHeight * 0.5f;
 		//screenY = Screen.height * 0.5f - menuHeight * 0.5f;
 		currentMenu = MainMenu;
 	
@@ -135,7 +136,7 @@ public class MainScreen : MonoBehaviour {
 	void MainMenu()
 	{
 		
-		GUILayout.BeginArea (new Rect (screenX,100 + screenY, menuWidth, menuHeight));
+		GUILayout.BeginArea (new Rect (screenX , screenY , menuWidth, menuHeight));
 		
 		if (GUILayout.Button ("Host network game")) {
 			
@@ -268,7 +269,6 @@ public class MainScreen : MonoBehaviour {
 			playerName = 
 				GUILayout.TextField(playerName, 20, GUILayout.MinWidth(200), GUILayout.MaxWidth(200));
 			GUILayout.Space (10);
-			// TODO: add player selection here
 		}
 		GUILayout.EndHorizontal();
 
@@ -283,13 +283,8 @@ public class MainScreen : MonoBehaviour {
 				// No hosts found
 				GUILayout.Label ("No host found.");
 
-				// FIXME: remove this code
-				if(!netScript.UseMasterServer) {
-					if (GUILayout.Button ("Connect")) {
-						netScript.ConnectWithServer(null);
-					}
-				}
-			} else {
+			} 
+			else {
 				
 				foreach (HostData uniqueHost in hostsOnline) {
 
@@ -303,11 +298,15 @@ public class MainScreen : MonoBehaviour {
 					GUILayout.Space (5);
 					GUILayout.FlexibleSpace ();
 
-					if (GUILayout.Button ("Connect")) {
+					// Check if the server is full
+					if(uniqueHost.connectedPlayers != uniqueHost.playerLimit) {
 
-						// FIXME: network stuff goes to the network script
-						netScript.ConnectWithServer(uniqueHost);
-						currentMenu = LobbyMenu;
+						if (GUILayout.Button ("Connect")) {
+
+							// FIXME: network stuff goes to the network script
+							netScript.ConnectWithServer(uniqueHost);
+							currentMenu = LobbyMenu;
+						}
 					}
 				}
 			}

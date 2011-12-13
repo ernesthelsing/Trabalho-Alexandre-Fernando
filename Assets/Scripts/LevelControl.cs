@@ -43,11 +43,9 @@ public class LevelControl : MonoBehaviour {
 	private TimeSpan tsLevelTimer;
 	private float fNetTimer;
 	private bool showExitButton = false;
-	
-	// Fernando //
 	private ScoreCounter scoreScript;
 	private NetworkGame networkScript;
-	// End Fernando //
+
 
 	private bool gameStarted = false;
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -65,9 +63,7 @@ public class LevelControl : MonoBehaviour {
 		networkScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
 		
 		//levelTimer = (2 + networkScript.levelTimeNetworkGame) * 60;
-		levelTimer = 5;
-		
-		endRestartTimer = 15;
+		levelTimer = 5.0f;
 
 		menuTime = Time.time;
 	}
@@ -104,23 +100,19 @@ public class LevelControl : MonoBehaviour {
 			// Updates the network timer, for platform synchronization
 			TimeCounter += Time.deltaTime;
 			//While its not under visual 0, time should be running, then it should stop
-			if(levelTimer > 0.9f)
-				{
-
-				levelTimer -= Time.deltaTime; // Assuming the timer showing to all players is in sync
+			if(levelTimer > 0.9f){
 					
+				//levelTimer = levelTimer - fNetTimer;
+				levelTimer -= Time.deltaTime; // Assuming the timer showing to all players is in sync
 				}
 				else{
-					
 					//No need to keep calling functions once they did what they had to do
 					if(!endOfGame){ 					
 					MatchEnded();
 					endOfGame = true;				
 					}
-					
-					
 				}
-			
+		
 			}else{
 				
 				if(startEndCount){
@@ -199,7 +191,7 @@ public class LevelControl : MonoBehaviour {
 		}
 
 		if(showExitButton) {
-		
+
 			if(GUILayout.Button("Exit Game")) {
 
 				// Disconnects from the game
@@ -264,7 +256,6 @@ public class LevelControl : MonoBehaviour {
 	 */
 	public void PlayerReachedEndArea(GameObject goPlayer) {
 
-		// Fernando //
 		if(Network.isServer) {
 
 			scoreScript.ScoreUpdate(goPlayer.networkView.owner);
@@ -273,7 +264,6 @@ public class LevelControl : MonoBehaviour {
 
 			networkView.RPC("Score",RPCMode.Server,goPlayer.networkView.owner);
 		}
-		// End Fernando //
 		
 		// Moves the player back to the respawn point
 		Vector3 start = goPlayer.GetComponent<PlayerControl>().StartingPosition;
@@ -335,6 +325,7 @@ public class LevelControl : MonoBehaviour {
 
 		float temp = 0.0f;
 		bool tempShowScoreBoard = false;
+		bool tempStartEndCount = false;
 		float tempLevelTimer = 0.0f;
 		float tempEndTimer = 0.0f;
 
@@ -349,10 +340,13 @@ public class LevelControl : MonoBehaviour {
 			
 			tempEndTimer = endRestartTimer;
 			
+			tempStartEndCount = startEndCount;
+			
 			stream.Serialize(ref temp);
 			stream.Serialize(ref tempShowScoreBoard);
 			stream.Serialize(ref tempLevelTimer);
-			stream.Serialize(ref endRestartTimer);
+			stream.Serialize(ref tempEndTimer);
+			stream.Serialize(ref tempStartEndCount);
 			
 		}
 		else {
@@ -364,12 +358,15 @@ public class LevelControl : MonoBehaviour {
 			
 			stream.Serialize(ref tempLevelTimer);
 			
-			stream.Serialize(ref endRestartTimer);
+			stream.Serialize(ref tempEndTimer);
+			
+			stream.Serialize(ref tempStartEndCount);
 			
 			TimeCounter = temp;
 			scoreScript.showScoreBoard = tempShowScoreBoard;
 			levelTimer = tempLevelTimer;
 			endRestartTimer = tempEndTimer;
+			startEndCount = tempStartEndCount;
 		}
 	}
 	
