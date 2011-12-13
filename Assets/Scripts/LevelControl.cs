@@ -64,7 +64,10 @@ public class LevelControl : MonoBehaviour {
 		
 		networkScript = GameObject.Find("NetworkCode").GetComponent<NetworkGame>();
 		
-		levelTimer = (2 + networkScript.levelTimeNetworkGame) * 60;
+		//levelTimer = (2 + networkScript.levelTimeNetworkGame) * 60;
+		levelTimer = 5;
+		
+		endRestartTimer = 15;
 
 		menuTime = Time.time;
 	}
@@ -103,8 +106,9 @@ public class LevelControl : MonoBehaviour {
 			//While its not under visual 0, time should be running, then it should stop
 			if(levelTimer > 0.9f)
 				{
-				//levelTimer = levelTimer - fNetTimer;
+
 				levelTimer -= Time.deltaTime; // Assuming the timer showing to all players is in sync
+					
 				}
 				else{
 					
@@ -116,9 +120,6 @@ public class LevelControl : MonoBehaviour {
 					
 					
 				}
-				
-			//TimeSpan.FromSeconds showing level time is faster
-			//if(levelTimer < 0.9f)Debug.Log("secondaryTimer: " + levelTimer);
 			
 			}else{
 				
@@ -198,7 +199,7 @@ public class LevelControl : MonoBehaviour {
 		}
 
 		if(showExitButton) {
-
+		
 			if(GUILayout.Button("Exit Game")) {
 
 				// Disconnects from the game
@@ -293,16 +294,18 @@ public class LevelControl : MonoBehaviour {
 		gameStarted = false;
 		startEndCount = true;
 		
-		if(Network.isServer)
-		foreach(ScoreCounter.PlayerScore ps in scoreScript.playersScores){
+		if(Network.isServer){
 			
-			NetworkGame.PlayerInfo tempPlayerInfo = networkScript.GetPlayerInfoFromNetwork(ps.netPlayer);
+			scoreScript.SortScore();
+			foreach(ScoreCounter.PlayerScore ps in scoreScript.playersScores){
 			
-			networkView.RPC("UpdateScoreList",RPCMode.Others,ps.netPlayer,ps.playerName,ps.score,tempPlayerInfo.playerAvatarIdx);
+				NetworkGame.PlayerInfo tempPlayerInfo = networkScript.GetPlayerInfoFromNetwork(ps.netPlayer);
+			
+				networkView.RPC("UpdateScoreList",RPCMode.Others,ps.netPlayer,ps.playerName,ps.score,tempPlayerInfo.playerAvatarIdx);
+			}
+		
 		}
 		
-		
-		scoreScript.SortScore();
 		scoreScript.showScoreBoard = true;
 		
 		//Debug.Log("Start End Count: " + startEndCount);
@@ -333,6 +336,7 @@ public class LevelControl : MonoBehaviour {
 		float temp = 0.0f;
 		bool tempShowScoreBoard = false;
 		float tempLevelTimer = 0.0f;
+		float tempEndTimer = 0.0f;
 
 		if(stream.isWriting) {
 
@@ -342,9 +346,13 @@ public class LevelControl : MonoBehaviour {
 			tempShowScoreBoard = scoreScript.showScoreBoard;
 			
 			tempLevelTimer = levelTimer;
+			
+			tempEndTimer = endRestartTimer;
+			
 			stream.Serialize(ref temp);
 			stream.Serialize(ref tempShowScoreBoard);
 			stream.Serialize(ref tempLevelTimer);
+			stream.Serialize(ref endRestartTimer);
 			
 		}
 		else {
@@ -355,9 +363,13 @@ public class LevelControl : MonoBehaviour {
 			stream.Serialize(ref tempShowScoreBoard);
 			
 			stream.Serialize(ref tempLevelTimer);
+			
+			stream.Serialize(ref endRestartTimer);
+			
 			TimeCounter = temp;
 			scoreScript.showScoreBoard = tempShowScoreBoard;
 			levelTimer = tempLevelTimer;
+			endRestartTimer = tempEndTimer;
 		}
 	}
 	

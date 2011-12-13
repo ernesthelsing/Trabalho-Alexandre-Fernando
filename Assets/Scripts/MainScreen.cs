@@ -135,7 +135,7 @@ public class MainScreen : MonoBehaviour {
 	void MainMenu()
 	{
 		
-		GUILayout.BeginArea (new Rect (screenX, screenY, menuWidth, menuHeight));
+		GUILayout.BeginArea (new Rect (screenX,100 + screenY, menuWidth, menuHeight));
 		
 		if (GUILayout.Button ("Host network game")) {
 			

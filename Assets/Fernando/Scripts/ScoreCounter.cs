@@ -119,6 +119,7 @@ public class ScoreCounter : MonoBehaviour {
 		
 			ScoreBoard();
 		}
+		
 	}
 	
 	//Builds the scoreboard needs polish
@@ -153,13 +154,19 @@ public class ScoreCounter : MonoBehaviour {
 				GUILayout.Label(ps.score.ToString(),playersTextStyle);
 				GUILayout.EndHorizontal();
 			}
-			
-			//GUILayout.Label(ps.playerName + " scores " + ps.score);
-		//toolbarint = GUILayout.Toolbar(toolbarint,toolbarstrings);
 		
-		//Debug.Log("Toolbarint:" + toolbarint);
-				
 		GUILayout.EndArea();
+		
+		playersTextStyle.normal.background = GUI.skin.GetStyle("Button").normal.background;
+		playersTextStyle.alignment = TextAnchor.MiddleCenter;
+		
+		if(GUI.Button(new Rect(screenX,screenY,100,40),"Exit Game",playersTextStyle)) {
+
+				// Disconnects from the game
+				Network.Disconnect(200);
+				// Go back to the main menu
+				Application.LoadLevel("main_screen");
+			}
 		
 		
 	}
