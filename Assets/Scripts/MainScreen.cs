@@ -118,7 +118,7 @@ public class MainScreen : MonoBehaviour {
 		// Draws the background texture
 		GUI.DrawTexture (mainScreenBGPos, mainScreenBG);
 		
-		currentMenu ();
+		currentMenu();
 	}
 
 	/* -------------------------------------------------------------------------------------------------------- */
@@ -365,8 +365,8 @@ public class MainScreen : MonoBehaviour {
 		}
 		else {
 
-			float buttonHeight = 20;
-			float buttonWidth = 120;
+			float buttonHeight = 60;
+			float buttonWidth = 360;
 
 			GUI.Label(new Rect(Screen.width * 0.5f - buttonWidth * 0.5f,
 							Screen.height - buttonHeight*2, buttonWidth, buttonHeight), 

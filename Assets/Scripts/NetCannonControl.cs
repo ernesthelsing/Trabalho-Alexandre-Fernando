@@ -6,11 +6,11 @@ public class NetCannonControl : MonoBehaviour {
 	
 	// PUBLIC
 	public GameObject bullet;
-	public float speed = 10.0f;
+	public float speed = 12.0f;
 	
 	public AudioClip blast;
-	public int minShootTime = 5;
-	public int maxShootTime = 15;
+	public int minShootTime = 3;
+	public int maxShootTime = 6;
 	public int myOwnIndex = -1;
 	
 	// PRIVATE
@@ -29,6 +29,7 @@ public class NetCannonControl : MonoBehaviour {
 
  		//pEmitter = GetComponent<ParticleEmitter>();
  		pEmitter = gameObject.GetComponentInChildren<ParticleEmitter>();
+
 		if(pEmitter == null) {
 
 			// DEBUG

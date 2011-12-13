@@ -21,9 +21,9 @@ public class LevelControl : MonoBehaviour {
 	
 	public GameObject[] allPlatforms = null; // All platforms from the level
 	public float platformMinAmplitude = 1.0f;
-	public float platformMaxAmplitude = 10.0f;
-	public float platformMinPeriod = 2.0f;
-	public float platformMaxPeriod = 3.0f;
+	public float platformMaxAmplitude = 3.0f;
+	public float platformMinPeriod = 2;
+	public float platformMaxPeriod = 3;
 	public GameObject[] allCannons = null; // All canons in the game
 
 	public bool GameStarted {
@@ -424,7 +424,11 @@ public class LevelControl : MonoBehaviour {
 				// Randomizes a new amplitude for this platform
 				float aAmplitude = UnityEngine.Random.Range(platformMinAmplitude,platformMaxAmplitude);
 				// Randomizes a new period for the platform (Speed)
-				float bPeriod = 1.0f;// UnityEngine.Random.Range(platformMinPeriod, platformMaxPeriod);
+				float bPeriod = UnityEngine.Random.Range(platformMinPeriod, platformMaxPeriod)/aAmplitude;
+
+				// DEBUG
+				Debug.Log("[LevelControl] Platform " + nIdx + " " + aAmplitude + "," + bPeriod + " = " + aAmplitude/bPeriod);
+
 
 				// Changes this platform in all connected games
 				networkView.RPC("SetPlatformStartUpValues", RPCMode.All, nIdx, aAmplitude, bPeriod);

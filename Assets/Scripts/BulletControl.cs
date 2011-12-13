@@ -40,7 +40,7 @@ public class BulletControl : MonoBehaviour {
 
 
 		// DEBUG
-		Debug.Log("[BulletControl] Bullet collided with " + collided.gameObject.name);
+		//Debug.Log("[BulletControl] Bullet collided with " + collided.gameObject.name);
 
 		
 		// Cannonball VS player
@@ -71,7 +71,7 @@ public class BulletControl : MonoBehaviour {
 			// Collided with anything else
 
 			// DEBUG
-			Debug.Log("[BulletControl] Bullet collided with " + collided.gameObject.name);
+			//Debug.Log("[BulletControl] Bullet collided with " + collided.gameObject.name);
 			startCount = true;
 			//GameObject.Destroy(transform.gameObject);
 			//Network.Destroy(transform.gameObject);
